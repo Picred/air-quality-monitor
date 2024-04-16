@@ -1,0 +1,55 @@
+version: '3.7'
+
+networks:
+  tap:
+    name: tap
+    external: true
+
+services:
+  kafkazk:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      KAFKA_ACTION: start-zk
+    networks:
+      - tap
+    container_name: kafkazk
+    command: "tail -f /dev/null" # Per mantenere il container in esecuzione
+
+  kafkaserver:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      KAFKA_ACTION: start-kafka
+    depends_on:
+      - kafkazk
+    networks:
+      - tap
+    container_name: kafkaserver
+    command: "tail -f /dev/null" # Per mantenere il container in esecuzione
+
+  kafkaui:
+    image: provectuslabs/kafka-ui:latest
+    environment:
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: "10.0.100.23:9092"
+      KAFKA_CLUSTERS_0_ZOOKEEPER: "10.0.100.22:2181"
+    networks:
+      - tap
+    container_name: kafkaui
+    ports:
+      - "8080:8080"
+
+  kafkatopic: 
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      KAFKA_ACTION: create-topic
+      KAKFA_SERVER: 10.0.100.23
+      KAFKA_TOPIC: tap
+    networks:
+      - tap
+    container_name: kafkatopic
+    command: "tail -f /dev/null" # Per mantenere il container in esecuzione
