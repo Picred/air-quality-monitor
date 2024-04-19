@@ -15,3 +15,11 @@ docker network create --subnet=10.0.100.0/24 tap
 docker build . --tag tap:logstash
 docker run --rm -it --hostname="logstash" -v $PWD/pipeline/httpoller.conf:/usr/share/logstash/pipeline/logstash.conf -e XPACK_MONITORING_ENABLED=false docker.elastic.co/logstash/logstash:8.13.0
 ```
+
+## Kafka
+Get kafka:
+```bash
+wget https://downloads.apache.org/kafka/3.7.0/kafka_2.13-3.7.0.tgz
+```
+
+>Edit version if necessary [Versions](https://downloads.apache.org/kafka/)
