@@ -1,11 +1,27 @@
 # air-flow-monitor
 Real-time air quality tracking software
 
+
 # Prerequisites
 To use the Air-Flow Monitor, you should be familiar with the following:
 - [Docker](https://www.docker.com/)
 - [Python](https://www.python.org/)
-- API key (dipende dal provider scelto)
+
+# Setup
+
+## Python Ingestion Manager
+To execute the script within the container, environment variables must be set. Specifically, variables need to be configured based on the desired data collection:
+
+`API_KEY` = Your [IQAIR](https://www.iqair.com) API key  
+`DATA_ACTION =  ["ALL_COUNTRIES" | "ALL_STATES_BY_COUNTRY" | "ALL_CITIES_BY_STATECOUNTRY" | "NEAREST_IP_CITY" | "NEAREST_GPS_CITY"]`. Default value is `NEAREST_IP_CITY`
+
+
+Below are the environment variables to be set according to the `DATA_ACTION`:
+`ALL_COUNTRIES` -> `API_KEY`
+`ALL_STATES_BY_COUNTRY` -> `API_KEY`, `STATE_NAME`
+`ALL_CITIES_BY_STATE_COUNTRY` -> `API_KEY`,  `STATE_NAME`, `COUNTRY_NAME`
+`NEAREST_IP_CITY` -> `API_KEY`
+`NEAREST_GPS_CITY` -> `API_KEY`, `GPS_LAT`, `GPS_LON`"
 
 
 ## Logstash
