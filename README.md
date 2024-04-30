@@ -1,5 +1,4 @@
-# air-flow-monitor
-Real-time air quality tracking software
+# Real-time air quality tracking software
 
 
 # Prerequisites

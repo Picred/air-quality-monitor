@@ -3,7 +3,12 @@ FROM docker.elastic.co/logstash/logstash:8.13.0
 WORKDIR /app
 # Add your logstash plugins setup here
 COPY ingestion_manager.py .
-RUN logstash-plugin install logstash-filter-sentimentalizer 
+COPY requirements.txt .
+RUN apt-get update && apt-get install -y python3-pip
+
+RUN pip install -r requirements.txt
+RUN python3 ingestion_manager.py
+# RUN logstash-plugin install logstash-filter-sentimentalizer 
 
 # to build with
 # docker build . --tag tap:logstash
