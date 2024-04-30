@@ -25,10 +25,11 @@ jobs:
 
       - name: Install dependencies
         run: |
+          cd ingestion_manager
           python -m pip install --upgrade pip
           pip install -r requirements.txt
           if ! python -c "import requests"; then pip install requests; fi
 
       - name: Run Pylint
         run: |
-          pylint **/*.py
+          pylint ingestion_manager/**/*.py
