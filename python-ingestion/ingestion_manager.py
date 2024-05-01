@@ -28,6 +28,7 @@ import time
 import socket
 import os
 import requests
+from pylogbeat import PyLogBeatClient
 
 API_KEY = os.getenv("API_KEY", None)
 COUNTRY_NAME = os.getenv("COUNTRY_NAME", "Italy")
@@ -39,10 +40,13 @@ DATA_ACTION = os.getenv("DATA_ACTION", "NEAREST_IP_CITY")
 
 ALL_COUNTRIES_URL = f"http://api.airvisual.com/v2/countries?key={API_KEY}"
 ALL_STATES_BY_COUNTRY_URL = f"http://api.airvisual.com/v2/states?country={COUNTRY_NAME}&key={API_KEY}" # pylint: disable=line-too-long
-ALL_CITIES_BY_STATECOUNTRY_URL = f"http://api.airvisual.com/v2/cities?state={STATE_NAME}&country={COUNTRY_NAME}&key={API_KEY}"
+ALL_CITIES_BY_STATE_COUNTRY_URL = f"http://api.airvisual.com/v2/cities?state={STATE_NAME}&country={COUNTRY_NAME}&key={API_KEY}"
 NEAREST_IP_CITY_URL = f"http://api.airvisual.com/v2/nearest_city?key={API_KEY}"
 NEAREST_GPS_CITY_URL = f"http://api.airvisual.com/v2/nearest_city?lat={GPS_LAT}&lon={GPS_LON}&key={API_KEY}"
+SPECIFIC_CITY_URL = f"http://api.airvisual.com/v2/city?city={CITY_TO_SCAN}&state={STATE_NAME}&country={COUNTRY_NAME}&key={API_KEY}"
 
+LOGSTASH_PORT = 5044
+LOGSTASH_HOSTNAME = "logstash"
 
 def get_data() -> dict:
     """
@@ -56,92 +60,14 @@ def get_data() -> dict:
             return requests.get(f"{ALL_COUNTRIES_URL}", timeout=15).json()
         case "ALL_STATES_BY_COUNTRY":
             return requests.get(f"{ALL_STATES_BY_COUNTRY_URL}", timeout=15).json()
-        case "ALL_CITIES_BY_STATECOUNTRY":
-            return requests.get(f"{ALL_CITIES_BY_STATECOUNTRY_URL}", timeout=15).json()
+        case "ALL_CITIES_BY_STATE_COUNTRY":
+            return requests.get(f"{ALL_CITIES_BY_STATE_COUNTRY_URL}", timeout=15).json()
         case "NEAREST_IP_CITY":
             return requests.get(f"{NEAREST_IP_CITY_URL}", timeout=15).json()
         case "NEAREST_GPS_CITY":
             return requests.get(f"{NEAREST_GPS_CITY_URL}", timeout=15).json()
-
-
-def send_to_logstash(host: str, port: int, data: dict):
-    """
-    Sends data to Logstash for ingestion.
-
-    Args:
-        host (str): The hostname or IP address of the Logstash server.
-        port (int): The port number of the Logstash server.
-        data (dict): The data to be sent to Logstash.
-    """
-    error = True
-    while error:
-        try:
-            sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            print("Socket created. sock: " + str(sock))
-
-            sock.connect((host, port))
-            print("Socket connected to HOST: " + host + " PORT: " + str(port))
-            print("Socket connected. Sock: " + str(sock))
-
-            print("Sending message: " + str(data))
-
-            sock.sendall(json.dumps(data).encode())
-            print("End connection")
-            sock.close()
-            error = False
-        except socket.error:
-            print("Connection error. There will be a new attempt in 10 seconds")
-            time.sleep(10)
-
-
-
-def extract_data(data_raw: dict) -> dict:
-    """
-    Extracts relevant air quality data from the HTML data_raw.
-
-    Args:
-        source (str): The HTML source containing air quality information.
-
-    Returns:
-        dict: A dictionary containing extracted air quality data.
-    """
-    clean_data = {
-        "city" : data_raw.get("city"),
-        "state" : data_raw.get("state"),
-        "country" : data_raw.get("country"),
-        "gps_lat" : data_raw.get("location").get("coordinates")[0],
-        "gps_lon" : data_raw.get("location").get("coordinates")[1],
-        "pollution_timestamp" : data_raw.get("current").get("pollution").get("ts"),
-        "aqius" : data_raw.get("current").get("pollution").get("aqius"),
-        "mainus" : data_raw.get("current").get("pollution").get("mainus"),
-        "aqicn" : data_raw.get("current").get("pollution").get("aqicn"),
-        "maincn" : data_raw.get("current").get("pollution").get("maincn"),
-        "weather_timestamp" : data_raw.get("current").get("weather").get("ts"),
-        "tp" : data_raw.get("current").get("weather").get("tp"),
-        "pr" : data_raw.get("current").get("weather").get("pr"),
-        "hu" : data_raw.get("current").get("weather").get("hu"),
-        "ws" : data_raw.get("current").get("weather").get("ws"),
-        "wd" : data_raw.get("current").get("weather").get("wd"),
-        "ic" : data_raw.get("current").get("weather").get("ic")
-    }
-    return clean_data
-
-
-def test_logstash() -> None:
-    """
-    Checks if Logstash is ready for receiving data.
-    """
-    while True:
-        try:
-            sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            sock.connect(('logstash', 5044))
-            sock.close()
-            print("[ingestion_manager]Logstash is ready!")
-            break
-        except socket.error:
-            print("[ingestion_manager]Logstash not ready, waiting... [CTRL+C to stop]")
-            time.sleep(5)
-            continue
+        case "SPECIFIC_CITY":
+            return requests.get(f"{SPECIFIC_CITY_URL}", timeout=15).json()
 
 
 def check_api_key() -> bool:
@@ -152,6 +78,37 @@ def check_api_key() -> bool:
         bool: True if API key is set, False otherwise.
     """
     return API_KEY is not None
+
+
+def test_logstash() -> None:
+    """
+    Checks if Logstash is ready for receiving data.
+    """
+    while True:
+        try:
+            sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            sock.connect((LOGSTASH_HOSTNAME, LOGSTASH_PORT))
+            sock.close()
+            print("[ingestion_manager] Logstash is ready!")
+            break
+        except socket.error:
+            print("[ingestion_manager] Logstash not ready, waiting... [CTRL+C to stop]")
+            time.sleep(5)
+            continue
+
+
+def send_to_logstash(host: str, port: int, data: dict) -> None:
+    """
+    Sends data to Logstash for ingestion.
+
+    Args:
+        host (str): The hostname or IP address of the Logstash server.
+        port (int): The port number of the Logstash server.
+        data (dict): The data to be sent to Logstash.
+    """
+    client = PyLogBeatClient(host, port)
+    client.send([json.dumps(data)])
+    print("[ingestion_manager] End connection")
 
 
 
@@ -180,9 +137,7 @@ async def main() -> None:
         print ("[ingestion_manager] Server error while getting data!")
         sys.exit()
 
-    clean_data = extract_data(data_raw.get("data"))
-
-    send_to_logstash("logstash", 5000, clean_data)
+    send_to_logstash(LOGSTASH_HOSTNAME, LOGSTASH_PORT, data_raw)
 
 
 if __name__ == '__main__':
