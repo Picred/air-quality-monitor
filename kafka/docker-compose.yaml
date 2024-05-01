@@ -15,7 +15,7 @@ services:
     networks:
       - tap
     container_name: kafkazk
-    command: "tail -f /dev/null" # Per mantenere il container in esecuzione
+    command: "tail -f /dev/null"
 
   kafkaserver:
     build:
@@ -28,7 +28,7 @@ services:
     networks:
       - tap
     container_name: kafkaserver
-    command: "tail -f /dev/null" # Per mantenere il container in esecuzione
+    command: "tail -f /dev/null"
 
   kafkaui:
     image: provectuslabs/kafka-ui:latest
@@ -48,8 +48,8 @@ services:
     environment:
       KAFKA_ACTION: create-topic
       KAKFA_SERVER: 10.0.100.23
-      KAFKA_TOPIC: tap
+      KAFKA_TOPIC: air-quality-monitor
     networks:
       - tap
     container_name: kafkatopic
-    command: "tail -f /dev/null" # Per mantenere il container in esecuzione
+    command: "tail -f /dev/null"
