@@ -5,7 +5,7 @@
 #### Settare il Dockerfile
 ```Dockerfile
 FROM amazoncorretto:17
-LABEL maintainer="Salvo Nicotra"
+LABEL maintainer="Andrei Daniel Stefan"
 ENV PATH /opt/kafka/bin:$PATH
 ENV KAFKA_DIR "/opt/kafka"
 ARG KAFKA_VERSION="2.13-3.7.0"
@@ -21,7 +21,7 @@ ADD kafka-manager.sh ${KAFKA_DIR}/bin/kafka-manager
 # Copy All conf here
 ADD conf/* ${KAFKA_DIR}/config/
 
-# Edit perms to run entrypoint (altrimenti errore)
+# Edit perms to run entrypoint
 USER root
 RUN chmod 777 ${KAFKA_DIR}/bin/kafka-manager
 
