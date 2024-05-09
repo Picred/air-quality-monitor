@@ -1,9 +1,12 @@
 version: '3.8'
 
 networks:
-  tap:
-    name: tap
-    external: true
+  aqm:
+    name: aqm
+    ipam:
+      driver: default
+      config:
+        - subnet: 10.0.100.0/24
 
 services:
   kafka_zk:
@@ -14,7 +17,7 @@ services:
     environment:
       KAFKA_ACTION: start-zk
     networks:
-      tap:
+      aqm:
         ipv4_address: 10.0.100.22
     ports:
       - "2181:2181"
@@ -27,7 +30,7 @@ services:
       - KAFKA_ACTION=start-kafka
     container_name: kafkaServer
     networks:
-      tap:
+      aqm:
         ipv4_address: 10.0.100.23
     ports:
       - "9092:9092"
@@ -39,7 +42,7 @@ services:
       - KAFKA_CLUSTERS_0_ZOOKEEPER=10.0.100.22:2181
     container_name: KafkaUI
     networks:
-      tap:
+      aqm:
     ports:
       - "8080:8080"
 
@@ -52,25 +55,15 @@ services:
     environment:
       - XPACK_MONITORING_ENABLED=false
     networks:
-      - tap
+      aqm:
   
   ingestion_manager:
-    image: python:3.10-slim
+    build:
+      context: ingestion_manager
+      dockerfile: Dockerfile
     hostname: ingestion_manager
     container_name: ingestion_manager
-    environment:
-      - API_KEY=0e72cb61-87b6-4ab4-b422-0886e1305ac6
-      - COUNTRY_NAME=Italy
-      - STATE_NAME=Sicily
-      - GPS_LAT=37.500000
-      - GPS_LON=15.090278
-      - CITY_TO_SCAN=San Filippo del Mela
-      - DATA_ACTION=NEAREST_GPS_CITY
     depends_on:
       - logstash
-    working_dir: /ingestion-manager
     networks:
-      - tap
-    volumes:
-      - ./ingestion_manager/:/ingestion-manager
-    command: ["sh", "-c", "pip3 install --no-cache-dir --disable-pip-version-check -r requirements.txt && python3 ingestion_manager.py"]
+      aqm:
