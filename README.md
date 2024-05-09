@@ -48,17 +48,23 @@ Below are the environment variables to be set according to the `DATA_ACTION`:
 
 
 ### Examples
-Get nearest city air quality data by IP address:
-- `docker run -it --rm --hostname="ingestion_manager" --network aqm -e DATA_ACTION="NEAREST_IP_CITY" python:3.10-slim`. 
-- It will work because **ENV variables** are already set in `docker-compose.yaml` file.
 
+```bash
+# Get nearest city air quality data by IP address
+docker run -it --rm --hostname="ingestion_manager" --network aqm -e DATA_ACTION="NEAREST_IP_CITY" python:3.10-slim`. 
+```
 
-Get specified city air quality data:
-- `docker run -it --rm --hostname="ingestion_manager" --network aqm -e DATA_ACTION="NEAREST_GPS_CITY" air-quality-monitor-ingestion_manager`
+*It will works because **ENV variables** are already set in `docker-compose.yaml` file.*
 
+```bash
+# Get specified city air quality data:
+docker run -it --rm --hostname="ingestion_manager" --network aqm -e DATA_ACTION="NEAREST_GPS_CITY" air-quality-monitor-ingestion_manager
+```
 
-Get all available cities searching by state name and country name:
-- `docker run -it --rm --hostname="ingestion_manager" --network aqm -e DATA_ACTION="ALL_CITIES_BY_STATE_COUNTRY" -e COUNTRY_NAME="Italy" -e STATE_NAME="Campania" air-quality-monitor-ingestion_manager`
+```bash
+# Get all available cities searching by state name and country name:
+docker run -it --rm --hostname="ingestion_manager" --network aqm -e DATA_ACTION="ALL_CITIES_BY_STATE_COUNTRY" -e COUNTRY_NAME="Italy" -e STATE_NAME="Campania" air-quality-monitor-ingestion_manager
+```
 
 
 ## Spark
