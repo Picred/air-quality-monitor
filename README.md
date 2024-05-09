@@ -7,7 +7,6 @@ To use the Air-Flow Monitor, you should be familiar with the following:
 - [Python](https://www.python.org/)
 
 # Setup ⚙️
-Create your network `docker network create --subnet=10.0.100.0/24 tap`
 
 ## Apache Zookeeper, Apache Kafka <img src="https://cdn.iconscout.com/icon/free/png-512/free-kafka-282292.png?f=webp&w=256" alt="Kafka Image" width="30">, Logstash <img src="https://cdn.iconscout.com/icon/free/png-512/free-logstash-3521553-2944971.png?f=webp&w=256" alt="Logstash Image" width="30">
 
