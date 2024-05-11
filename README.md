@@ -19,7 +19,7 @@ cd ..
 ```
 > *Edit version if necessary [Versions](https://downloads.apache.org/kafka/)*
 
-### Docker Compse<img src="https://cdn4.iconfinder.com/data/icons/logos-and-brands/512/97_Docker_logo_logos-256.png" alt="Kafka UI Image" width="50">
+### Docker Compose<img src="https://cdn4.iconfinder.com/data/icons/logos-and-brands/512/97_Docker_logo_logos-256.png" alt="Kafka UI Image" width="50">
 
 Create Zookeeper, Kafka Server, Kafka UI, Logstash and Ingestion Manager containers:
 ```bash
@@ -29,7 +29,7 @@ docker-compose up
 > http://localhost:8080 to see KafkaUI
 
 
-## Ingestion Manager <img src="https://cdn4.iconfinder.com/data/icons/logos-and-brands/512/267_Python_logo-256.png" alt="Python Image" width="30">
+# How to get Data - (*Ingestion Manager*) <img src="https://cdn4.iconfinder.com/data/icons/logos-and-brands/512/267_Python_logo-256.png" alt="Python Image" width="30">
 
 To execute the script within the container, environment variables must be set. Specifically, variables need to be configured based on the desired data collection:
 
@@ -69,9 +69,6 @@ docker run -it --rm --hostname="ingestion_manager" --network aqm -e DATA_ACTION=
 
 ## Spark
 
----
+<!--  TODO -->
 
-- Test Console Consumer
-    ```bash
-    docker run -e KAFKA_ACTION=consumer -e KAFKA_TOPIC=air-quality-monitor --network tap -it tap:kafka
-    ```
+---
