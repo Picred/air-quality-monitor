@@ -40,7 +40,7 @@ services:
     environment:
       - KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS=10.0.100.23:9092
       - KAFKA_CLUSTERS_0_ZOOKEEPER=10.0.100.22:2181
-    container_name: KafkaUI
+    container_name: kafkaUI
     networks:
       aqm:
     ports:
