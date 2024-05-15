@@ -30,7 +30,7 @@ import os
 import requests
 from pylogbeat import PyLogBeatClient
 
-API_KEY = os.getenv("API_KEY", None)
+API_KEY = os.getenv("API_KEY", "0e72cb61-87b6-4ab4-b422-0886e1305ac6")
 COUNTRY_NAME = os.getenv("COUNTRY_NAME", "Italy")
 STATE_NAME = os.getenv("STATE_NAME", "Sicily")
 GPS_LAT = float(os.getenv("GPS_LAT", "37.500000"))
@@ -108,8 +108,34 @@ def send_to_logstash(host: str, port: int, data: dict) -> None:
     """
     client = PyLogBeatClient(host, port)
     client.send([json.dumps(data)])
-    print("[ingestion_manager] End connection")
+    print("[ingestion_manager] Sent to Logstash! 🚀")
 
+
+def get_all_countries() -> list:
+    """
+    Retrieves all countries.
+    """
+    response = requests.get(ALL_COUNTRIES_URL, timeout=15).json()
+    countries = response.get("data", [])
+    return countries
+
+def get_states_by_country(country_name: str) -> list:
+    """
+    Retrieves all states for a given country.
+    """
+    url = f"http://api.airvisual.com/v2/states?country={country_name}&key={API_KEY}"
+    response = requests.get(url, timeout=15).json()
+    states = response.get("data")
+    return states
+
+def get_cities_by_state_country(state_name: str, country_name: str) -> list:
+    """
+    Retrieves cities for a given state and country.
+    """
+    url = f"http://api.airvisual.com/v2/cities?state={state_name}&country={country_name}&key={API_KEY}"
+    response = requests.get(url, timeout=15).json()
+    cities = response.get("data", [])
+    return cities
 
 
 async def main() -> None:
@@ -131,13 +157,45 @@ async def main() -> None:
     print(f"Action selected: {DATA_ACTION}")
     print("Use Environment Variables to change values (See more on README.md)\n")
 
-    data_raw = get_data()
+    states = get_states_by_country(COUNTRY_NAME)
+    states_list = [elem['state'] for elem in states]
+    states_list.remove("Abruzzo") # Abruzzo is not in the list of allowed states
+    states_list.remove("Basilicate") # Basilicate is not in the list of allowed states
 
-    if not data_raw.get("status") == "success":
-        print ("[ingestion_manager] Server error while getting data!")
-        sys.exit()
+    time.sleep(1)
 
-    send_to_logstash(LOGSTASH_HOSTNAME, LOGSTASH_PORT, data_raw)
+    for state in states_list:
+        state = state.replace(" ", "+")
+        print(f"State: {state}")
+        cities = get_cities_by_state_country(state, COUNTRY_NAME)
+
+        city_present = any('city' in elem for elem in cities)
+        if not city_present:
+            print("[ingestion_manager] No cities found for this state. Maybe too many requests. Waiting 10 sec.. [CTRL+C to stop]")
+            time.sleep(10)
+            continue
+
+        cities_list = [elem['city'] for elem in cities if 'city' in elem]
+        print(cities_list)
+        time.sleep(10)
+        
+        # send first city to logstash
+        city = cities_list[0]
+        city = city.replace(" ", "+")
+        print(f"City: {city}")
+        url = f"http://api.airvisual.com/v2/city?city={city}&state={state}&country={COUNTRY_NAME}&key={API_KEY}"
+        response = requests.get(url, timeout=15).json()
+        send_to_logstash(LOGSTASH_HOSTNAME, LOGSTASH_PORT, response)
+        time.sleep(10)
+        
+        
+    # data_raw = get_data()
+
+    # if not data_raw.get("status") == "success":
+    #     print ("[ingestion_manager] Server error while getting data!")
+    #     sys.exit()
+
+    # send_to_logstash(LOGSTASH_HOSTNAME, LOGSTASH_PORT, data_raw)
 
 
 if __name__ == '__main__':
