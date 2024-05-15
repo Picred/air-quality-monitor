@@ -67,3 +67,13 @@ services:
       - logstash
     networks:
       aqm:
+
+  spark:
+    build: 
+      context: spark
+      dockerfile: Dockerfile
+    ports:
+      - 4040:4040
+    container_name: spark
+    depends_on: 
+        - kafkaServer

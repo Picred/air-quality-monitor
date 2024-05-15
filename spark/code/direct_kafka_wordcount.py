@@ -44,7 +44,7 @@ sc.setLogLevel("WARN")
 ssc = StreamingContext(sc, 1)
 
 brokers="10.0.100.23:9092"
-topic = "tap"
+topic = "aqm"
 
 kvs = KafkaUtils.createDirectStream(ssc, [topic], {"metadata.broker.list": brokers})
 lines = kvs.map(lambda x: x[1])

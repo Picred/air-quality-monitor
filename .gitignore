@@ -1,3 +1,5 @@
 # Custom
 .ipynb_checkpoints
 kafka/setup/kafka*
+spark/setup/spark*
+spark/dataset
