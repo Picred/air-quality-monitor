@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    
+        <script>
+            L_NO_TOUCH = false;
+            L_DISABLE_3D = false;
+        </script>
+    
+    <style>html, body {width: 100%;height: 100%;margin: 0;padding: 0;}</style>
+    <style>#map {position:absolute;top:0;bottom:0;right:0;left:0;}</style>
+    <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.2.0/css/all.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/python-visualization/folium/folium/templates/leaflet.awesome.rotate.min.css"/>
+    
+            <meta name="viewport" content="width=device-width,
+                initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+            <style>
+                #map_e46e109014c5ee9438b0ccc798fa3ba3 {
+                    position: relative;
+                    width: 100.0%;
+                    height: 100.0%;
+                    left: 0.0%;
+                    top: 0.0%;
+                }
+                .leaflet-container { font-size: 1rem; }
+            </style>
+        
+</head>
+<body>
+    
+    
+            <div class="folium-map" id="map_e46e109014c5ee9438b0ccc798fa3ba3" ></div>
+        
+</body>
+<script>
+    
+    
+            var map_e46e109014c5ee9438b0ccc798fa3ba3 = L.map(
+                "map_e46e109014c5ee9438b0ccc798fa3ba3",
+                {
+                    center: [41.87810134887695, -87.62979888916016],
+                    crs: L.CRS.EPSG3857,
+                    zoom: 2,
+                    zoomControl: true,
+                    preferCanvas: false,
+                }
+            );
+
+            
+
+        
+    
+            var tile_layer_883906ce83e7a42e50166c2194fe9fe7 = L.tileLayer(
+                "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+                {"attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors", "detectRetina": false, "maxNativeZoom": 19, "maxZoom": 19, "minZoom": 0, "noWrap": false, "opacity": 1, "subdomains": "abc", "tms": false}
+            );
+        
+    
+            tile_layer_883906ce83e7a42e50166c2194fe9fe7.addTo(map_e46e109014c5ee9438b0ccc798fa3ba3);
+        
+    
+            var marker_87d4f1088c70347ec45b1930edd43af5 = L.marker(
+                [41.87810134887695, -87.62979888916016],
+                {}
+            ).addTo(map_e46e109014c5ee9438b0ccc798fa3ba3);
+        
+    
+        var popup_026a95bad9d11514299c9924abef9869 = L.popup({"maxWidth": "100%"});
+
+        
+            
+                var html_5f70fc63fb771a66078b783ccca43d83 = $(`<div id="html_5f70fc63fb771a66078b783ccca43d83" style="width: 100.0%; height: 100.0%;">Chicago, USA - Informazioni XYZ</div>`)[0];
+                popup_026a95bad9d11514299c9924abef9869.setContent(html_5f70fc63fb771a66078b783ccca43d83);
+            
+        
+
+        marker_87d4f1088c70347ec45b1930edd43af5.bindPopup(popup_026a95bad9d11514299c9924abef9869)
+        ;
+
+        
+    
+    
+            var marker_c12c47c944daa7f52edd28180892a969 = L.marker(
+                [51.50740051269531, -0.12780000269412994],
+                {}
+            ).addTo(map_e46e109014c5ee9438b0ccc798fa3ba3);
+        
+    
+        var popup_768696a35dd766f88a0fb32f4323aec1 = L.popup({"maxWidth": "100%"});
+
+        
+            
+                var html_a58b1db29008f66d46175f1b5aac3801 = $(`<div id="html_a58b1db29008f66d46175f1b5aac3801" style="width: 100.0%; height: 100.0%;">London, UK - Informazioni ABC</div>`)[0];
+                popup_768696a35dd766f88a0fb32f4323aec1.setContent(html_a58b1db29008f66d46175f1b5aac3801);
+            
+        
+
+        marker_c12c47c944daa7f52edd28180892a969.bindPopup(popup_768696a35dd766f88a0fb32f4323aec1)
+        ;
+
+        
+    
+    
+            var marker_90c705c1451944e5c68b702aa6ce0dea = L.marker(
+                [35.68949890136719, 139.6916961669922],
+                {}
+            ).addTo(map_e46e109014c5ee9438b0ccc798fa3ba3);
+        
+    
+        var popup_562e5327788f58e8456b1e0a5b9b7bff = L.popup({"maxWidth": "100%"});
+
+        
+            
+                var html_b9d2ecbde269972f1d764c56bed885ee = $(`<div id="html_b9d2ecbde269972f1d764c56bed885ee" style="width: 100.0%; height: 100.0%;">Tokyo, Japan - Altre informazioni</div>`)[0];
+                popup_562e5327788f58e8456b1e0a5b9b7bff.setContent(html_b9d2ecbde269972f1d764c56bed885ee);
+            
+        
+
+        marker_90c705c1451944e5c68b702aa6ce0dea.bindPopup(popup_562e5327788f58e8456b1e0a5b9b7bff)
+        ;
+
+        
+    
+    
+            var marker_b904b1f2e40108f486485dd63d2c84fd = L.marker(
+                [-33.86880111694336, 151.2093048095703],
+                {}
+            ).addTo(map_e46e109014c5ee9438b0ccc798fa3ba3);
+        
+    
+        var popup_bcb4055bee15ddd7d0c8f5f5448dbc9d = L.popup({"maxWidth": "100%"});
+
+        
+            
+                var html_631fc190f43d9283500d99625b8b6b3f = $(`<div id="html_631fc190f43d9283500d99625b8b6b3f" style="width: 100.0%; height: 100.0%;">Sydney, Australia - Altre informazioni</div>`)[0];
+                popup_bcb4055bee15ddd7d0c8f5f5448dbc9d.setContent(html_631fc190f43d9283500d99625b8b6b3f);
+            
+        
+
+        marker_b904b1f2e40108f486485dd63d2c84fd.bindPopup(popup_bcb4055bee15ddd7d0c8f5f5448dbc9d)
+        ;
+
+        
+    
+    
+            var marker_2a9fe3b0db7d25560f24ebdd61aa9127 = L.marker(
+                [40.712799072265625, -74.00599670410156],
+                {}
+            ).addTo(map_e46e109014c5ee9438b0ccc798fa3ba3);
+        
+    
+        var popup_6ef5b6acce1ac264040a37431e449833 = L.popup({"maxWidth": "100%"});
+
+        
+            
+                var html_ed4923da060688e1e63c3255c417c148 = $(`<div id="html_ed4923da060688e1e63c3255c417c148" style="width: 100.0%; height: 100.0%;">New York City, USA - Altre informazioni</div>`)[0];
+                popup_6ef5b6acce1ac264040a37431e449833.setContent(html_ed4923da060688e1e63c3255c417c148);
+            
+        
+
+        marker_2a9fe3b0db7d25560f24ebdd61aa9127.bindPopup(popup_6ef5b6acce1ac264040a37431e449833)
+        ;
+
+        
+    
+</script>
+</html>
