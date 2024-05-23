@@ -36,7 +36,7 @@ services:
       - "9092:9092"
 
   kafka_ui:
-    image: provectuslabs/kafka-ui:latest
+    image: provectuslabs/kafka-ui:v0.7.2
     environment:
       - KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS=10.0.100.23:9092
       - KAFKA_CLUSTERS_0_ZOOKEEPER=10.0.100.22:2181
