@@ -36,7 +36,7 @@ After running *docker-compose*, you can generate additional data by starting oth
 
 ```bash
 API_KEY = 123abc # Your IQAir API key  
-DATA_ACTION = [ "ALL_COUNTRIES" | "ALL_STATES_BY_COUNTRY" | "ALL_CITIES_BY_STATECOUNTRY" | "NEAREST_IP_CITY" | "NEAREST_GPS_CITY"] # Default value is DEMO
+DATA_ACTION = ["ALL_COUNTRIES" | "ALL_STATES_BY_COUNTRY" | "ALL_CITIES_BY_STATECOUNTRY" | "NEAREST_IP_CITY" | "NEAREST_GPS_CITY" | "DEMO" | "NODEMO"] # Default value is DEMO
 ```
 
 
@@ -49,6 +49,7 @@ Below are the environment variables to be set according to the `DATA_ACTION`:
 |   ALL_CITIES_BY_STATE_COUNTRY  |         API_KEY, STATE_NAME, COUNTRY_NAME     |
 |        NEAREST_GPS_CITY        |           API_KEY, GPS_LAT, GPS_LON           |
 |         SPECIFIC_CITY          |API_KEY, STATE_NAME, COUNTRY_NAME, CITY_TO_SCAN|
+
 
 
 ## Examples
