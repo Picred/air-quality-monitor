@@ -3,7 +3,7 @@ FROM apache/spark:python3
 USER root
 
 WORKDIR /app
-RUN pip3 install pyspark kafka-utils folium
+RUN pip3 install pyspark kafka-utils confluent_kafka
 COPY app.py .
 
 # Copia il file di configurazione di Spark (se necessario)
@@ -15,6 +15,7 @@ ENV PYSPARK_DRIVER_PYTHON=python3
 
 # Comando di avvio predefinito
 # CMD ["/opt/spark/bin/pyspark"]
-CMD ["python3", "app.py"]
+# CMD ["python3", "app.py"]
 
-# docker build -t spark-pyspark . && docker run -it spark-pyspark -v .:/app
+ENTRYPOINT [ "spark-submit", "--packages", "org.apache.spark:spark-sql-kafka-0-10_2.12:3.3.0","--master","spark://spark-master:7077", "app.py"]
+# docker build -t spark-pyspark . && docker run -it -v .:/app spark-pyspark
