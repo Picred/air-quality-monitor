@@ -36,7 +36,7 @@ After running *docker-compose*, you can generate additional data by starting oth
 
 ```bash
 API_KEY = 123abc # Your IQAir API key  
-DATA_ACTION = [ "ALL_COUNTRIES" | "ALL_STATES_BY_COUNTRY" | "ALL_CITIES_BY_STATECOUNTRY" | "NEAREST_IP_CITY" | "NEAREST_GPS_CITY"] # Default value is NEAREST_GPS_CITY
+DATA_ACTION = [ "ALL_COUNTRIES" | "ALL_STATES_BY_COUNTRY" | "ALL_CITIES_BY_STATECOUNTRY" | "NEAREST_IP_CITY" | "NEAREST_GPS_CITY"] # Default value is DEMO
 ```
 
 
@@ -51,23 +51,47 @@ Below are the environment variables to be set according to the `DATA_ACTION`:
 |         SPECIFIC_CITY          |API_KEY, STATE_NAME, COUNTRY_NAME, CITY_TO_SCAN|
 
 
-### Examples
+## Examples
 
 ```bash
-# Get nearest city air quality data by IP address
-docker run -it --rm --hostname="ingestion_manager" --network aqm -e DATA_ACTION="NEAREST_IP_CITY" air-quality-monitor-ingestion_manager`. 
+# Start a NoDemo version of the app with real values:
+docker run -it --rm --hostname="ingestion_manager" --network aqm -e DATA_ACTION="NODEMO" air-quality-monitor-ingestion_manager
 ```
 
-*It will works because **ENV variables** are already set in `docker-compose.yaml` file.*
+```bash
+# Get air quality data of the neares city by IP address:
+docker run -it --rm --hostname="ingestion_manager" --network aqm -e DATA_ACTION="NEAREST_IP_CITY" air-quality-monitor-ingestion_manager
+```
 
 ```bash
-# Get specified city air quality data:
+# Get air quality data of the neares city by GPS coordinates:
+docker run -it --rm --hostname="ingestion_manager" --network aqm -e DATA_ACTION="NEAREST_GPS_CITY" -e GPS_LAT="37.500000" -e GPS_LON="15.090278" air-quality-monitor-ingestion_manager
+```
+
+*It will works because **ENV variables** are already set in `ingestion_manager.py` file.*
+
+```bash
+# Get air quality data of a specified city:
 docker run -it --rm --hostname="ingestion_manager" --network aqm -e DATA_ACTION="SPECIFIC_CITY" -e COUNTRY_NAME="Italy" -e STATE_NAME="Campania" -e CITY_TO_SCAN="Naples" air-quality-monitor-ingestion_manager
 ```
 
+
+### Other commands that will not be sended to logstash
+These commands are to see the available resources from IQAir. These resources will not be sent to logstash and therefore will not be further processed. Their purpose is to allow the user to understand which cities, regions, and countries can be used and how they should be written for correct syntax.
+
 ```bash
-# Get all available cities searching by state name and country name:
-docker run -it --rm --hostname="ingestion_manager" --network aqm -e DATA_ACTION="ALL_CITIES_BY_STATE_COUNTRY" -e COUNTRY_NAME="Italy" -e STATE_NAME="Campania" air-quality-monitor-ingestion_manager
+# Get all supported countries:
+docker run -it --rm --hostname="ingestion_manager" --network aqm -e DATA_ACTION="ALL_COUNTRIES" air-quality-monitor-ingestion_manager
+```
+
+```bash
+# Get all supported states by country:
+docker run -it --rm --hostname="ingestion_manager" --network aqm -e DATA_ACTION="ALL_STATES_BY_COUNTRY" -e COUNTRY_NAME="Italy" air-quality-monitor-ingestion_manager
+```
+
+```bash
+# Get all supported cities by state and country:
+docker run -it --rm --hostname="ingestion_manager" --network aqm -e DATA_ACTION="ALL_CITIES_BY_STATE_COUNTRY" -e STATE_NAME="Calabria" -e COUNTRY_NAME="Italy" air-quality-monitor-ingestion_manager
 ```
 
 

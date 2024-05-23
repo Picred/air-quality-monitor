@@ -36,11 +36,12 @@ STATE_NAME = os.getenv("STATE_NAME", "Sicily")
 GPS_LAT = float(os.getenv("GPS_LAT", "37.500000"))
 GPS_LON = float(os.getenv("GPS_LON", "15.090278"))
 CITY_TO_SCAN = os.getenv("CITY_TO_SCAN", "Catania")
-DATA_ACTION = os.getenv("DATA_ACTION", "NEAREST_IP_CITY")
+DATA_ACTION = os.getenv("DATA_ACTION", "DEMO")
 
 ALL_COUNTRIES_URL = f"http://api.airvisual.com/v2/countries?key={API_KEY}"
-ALL_STATES_BY_COUNTRY_URL = f"http://api.airvisual.com/v2/states?country={COUNTRY_NAME}&key={API_KEY}" # pylint: disable=line-too-long
+ALL_STATES_BY_COUNTRY_URL = f"http://api.airvisual.com/v2/states?country={COUNTRY_NAME}&key={API_KEY}"
 ALL_CITIES_BY_STATE_COUNTRY_URL = f"http://api.airvisual.com/v2/cities?state={STATE_NAME}&country={COUNTRY_NAME}&key={API_KEY}"
+
 NEAREST_IP_CITY_URL = f"http://api.airvisual.com/v2/nearest_city?key={API_KEY}"
 NEAREST_GPS_CITY_URL = f"http://api.airvisual.com/v2/nearest_city?lat={GPS_LAT}&lon={GPS_LON}&key={API_KEY}"
 SPECIFIC_CITY_URL = f"http://api.airvisual.com/v2/city?city={CITY_TO_SCAN}&state={STATE_NAME}&country={COUNTRY_NAME}&key={API_KEY}"
@@ -106,6 +107,9 @@ def send_to_logstash(host: str, port: int, data: dict) -> None:
         port (int): The port number of the Logstash server.
         data (dict): The data to be sent to Logstash.
     """
+    if type(data.get("data")) == list:
+        print(data)
+        return
     client = PyLogBeatClient(host, port)
     client.send([json.dumps(data)])
     print("[ingestion_manager] Sent to Logstash! 🚀")
@@ -142,21 +146,10 @@ async def main() -> None:
     """
     The main asynchronous function for executing the script.
     """
-    if not check_api_key():
-        print ("[ingestion_manager] API_KEY environment variable not set!!")
-        sys.exit()
-    print("[ingestion_manager] API_KEY is set 👌")
-
-    test_logstash()
-
-    print(f"[ingestion_manager] Main Information\nCountry: {COUNTRY_NAME}")
-    print(f"State: {STATE_NAME}")
-    print(f"Latitude: {GPS_LAT}")
-    print(f"Longitude: {GPS_LON}")
-    print(f"Selected city to scan: {CITY_TO_SCAN} ")
-    print(f"Action selected: {DATA_ACTION}")
-    print("Use Environment Variables to change values (See more on README.md)\n")
-
+    print("[ingestion_manager] Starting data ingestion process...")
+    print("[ingestion_manager] This is not a demo. Real data will be retrieved. It may take a while. 🕒")
+    print(f"[ingestion_manager] Selected country: {COUNTRY_NAME}")
+    print("[ingestion_manager] Retrieving data of major of cities...")
     states = get_states_by_country(COUNTRY_NAME)
     states_list = [elem['state'] for elem in states]
     states_list.remove("Abruzzo") # Abruzzo is not in the list of allowed states
@@ -166,7 +159,7 @@ async def main() -> None:
 
     for state in states_list:
         state = state.replace(" ", "+")
-        print(f"State: {state}")
+        print(f"State retrieved: {state}")
         cities = get_cities_by_state_country(state, COUNTRY_NAME)
 
         city_present = any('city' in elem for elem in cities)
@@ -176,30 +169,52 @@ async def main() -> None:
             continue
 
         cities_list = [elem['city'] for elem in cities if 'city' in elem]
-        print(cities_list)
+        print(f"[ingestion_manager] Retrieved cities {cities_list}")
         time.sleep(10)
-        
-        # send first city to logstash
+
         city = cities_list[0]
         city = city.replace(" ", "+")
-        print(f"City: {city}")
+        print(f"[ingestion_manager] City selected: {city}")
         url = f"http://api.airvisual.com/v2/city?city={city}&state={state}&country={COUNTRY_NAME}&key={API_KEY}"
         response = requests.get(url, timeout=15).json()
         send_to_logstash(LOGSTASH_HOSTNAME, LOGSTASH_PORT, response)
         time.sleep(10)
-        
-        
-    # data_raw = get_data()
 
-    # if not data_raw.get("status") == "success":
-    #     print ("[ingestion_manager] Server error while getting data!")
-    #     sys.exit()
 
-    # send_to_logstash(LOGSTASH_HOSTNAME, LOGSTASH_PORT, data_raw)
+def get_demo_data() -> dict:
+    """
+    Retrieves all demo data from a given json file.
+    """
+    with open(file='demo_data.json', mode='r', encoding='utf-8') as f:
+        return json.load(f)
+
+
+async def demo() -> None:
+    """
+    Demo function to test the data ingestion process.
+    """
+    demo_data = get_demo_data()
+    for element in demo_data:
+        send_to_logstash(LOGSTASH_HOSTNAME, LOGSTASH_PORT, element)
+    
 
 
 if __name__ == '__main__':
+    if not check_api_key():
+        print ("[ingestion_manager] API_KEY environment variable not set!!")
+        sys.exit()
+    print("[ingestion_manager] API_KEY is set 👌")
+
+    test_logstash()
+
     try:
-        asyncio.run(main())
+        match DATA_ACTION:
+            case "DEMO":
+                asyncio.run(demo())
+            case "NODEMO":
+                asyncio.run(main())
+            case _:
+                send_to_logstash(LOGSTASH_HOSTNAME, LOGSTASH_PORT, get_data())
+    
     except KeyboardInterrupt:
         print("[ingestion-manager] Program exited")
