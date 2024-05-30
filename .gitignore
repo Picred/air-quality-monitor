@@ -3,3 +3,4 @@
 kafka/setup/kafka*
 spark/setup/spark*
 spark/dataset
+**/__pycache__/

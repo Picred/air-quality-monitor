@@ -183,6 +183,10 @@ def get_cities_by_state_country(state_name: str, country_name: str) -> list:
 
     while not is_valid_response(response):
         error = response.get("data", []).get("message", "Unknown error")
+        if error == "state_not_found":
+            print(f"[ingestion_manager] Failed to fetch data. {error}")
+            return []
+
         print(f"[ingestion_manager] Failed to fetch data. {error}. Waiting 5 sec.. [CTRL+C to stop]")
         time.sleep(5)
         response = requests.get(url, timeout=15).json()
@@ -202,8 +206,11 @@ async def main() -> None:
     states = get_states_by_country(COUNTRY_NAME)
     states_list = [elem['state'] for elem in states]
 
-    states_list.remove("Abruzzo") # Abruzzo is not in the list of allowed states
-    states_list.remove("Basilicate") # Basilicate is not in the list of allowed states
+    # Not working states
+    # states_list.remove("Abruzzo") 
+    # states_list.remove("Basilicate")
+    # states_list.remove("Molise")
+    # states_list.remove("Veneto")
 
     time.sleep(1)
 
@@ -212,6 +219,8 @@ async def main() -> None:
         print(f"State retrieved: {state}")
         cities = get_cities_by_state_country(state, COUNTRY_NAME)
 
+        if not cities:
+            continue
         city_present = any('city' in elem for elem in cities)
         if not city_present:
             print("[ingestion_manager] No cities found for this state. Maybe too many requests. Waiting 10 sec.. [CTRL+C to stop]")
@@ -227,6 +236,13 @@ async def main() -> None:
         print(f"[ingestion_manager] City selected: {city}")
         url = f"http://api.airvisual.com/v2/city?city={city}&state={state}&country={COUNTRY_NAME}&key={API_KEY}"
         response = requests.get(url, timeout=15).json()
+
+        while not is_valid_response(response):
+            error = response.get("data", []).get("message", "Unknown error")
+            print(f"[ingestion_manager] Failed to fetch data. {error}. Waiting 5 sec.. [CTRL+C to stop]")
+            time.sleep(5)
+            response = requests.get(url, timeout=15).json()
+
         send_to_logstash(LOGSTASH_HOSTNAME, LOGSTASH_PORT, response)
         time.sleep(10)
 
