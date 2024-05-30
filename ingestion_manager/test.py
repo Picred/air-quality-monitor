@@ -1,8 +1,6 @@
-import json
+from ingestion_manager import get_data_handler
 
-with open(file='demo_data.json', mode='r', encoding='utf-8') as f:
-    data = json.load(f)
+states = get_data_handler()
 
-# print(data[0].get("data").keys())
 
-print(type(data[0]) == list)
+print(f"[test] {states}")

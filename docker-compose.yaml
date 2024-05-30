@@ -71,7 +71,7 @@ services:
       aqm:
 
   spark:
-    image: apache/spark
+    image: apache/spark:3.5.1
     hostname: spark
     container_name: spark
     volumes:

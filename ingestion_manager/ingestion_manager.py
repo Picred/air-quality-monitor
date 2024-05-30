@@ -36,7 +36,7 @@ STATE_NAME = os.getenv("STATE_NAME", "Sicily")
 GPS_LAT = float(os.getenv("GPS_LAT", "37.500000"))
 GPS_LON = float(os.getenv("GPS_LON", "15.090278"))
 CITY_TO_SCAN = os.getenv("CITY_TO_SCAN", "Catania")
-DATA_ACTION = os.getenv("DATA_ACTION", "DEMO")
+DATA_ACTION = os.getenv("DATA_ACTION", "ALL_CITIES_BY_STATE_COUNTRY")
 
 ALL_COUNTRIES_URL = f"http://api.airvisual.com/v2/countries?key={API_KEY}"
 ALL_STATES_BY_COUNTRY_URL = f"http://api.airvisual.com/v2/states?country={COUNTRY_NAME}&key={API_KEY}"
@@ -51,7 +51,7 @@ LOGSTASH_HOSTNAME = "logstash"
 
 def get_data() -> dict:
     """
-    Retrieves air quality data based on the specified action.
+    Handles the retrieval of air quality data based on the specified action.
 
     Returns:
         dict: The json response containing air quality data.
@@ -69,6 +69,23 @@ def get_data() -> dict:
             return requests.get(f"{NEAREST_GPS_CITY_URL}", timeout=15).json()
         case "SPECIFIC_CITY":
             return requests.get(f"{SPECIFIC_CITY_URL}", timeout=15).json()
+
+
+def get_data_handler() -> dict:
+    """
+    Retrieves air quality data based on the specified action.
+
+    Returns:
+        dict: The json response containing air quality data.
+    """
+    response = get_data()
+
+    while not is_valid_response(response):
+        error = response.get("data", []).get("message", "Unknown error")
+        print(f"[ingestion_manager] Failed to fetch data. {error}. Waiting 5 sec.. [CTRL+C to stop]")
+        time.sleep(5)
+        response = get_data()
+    return response
 
 
 def check_api_key() -> bool:
@@ -114,12 +131,30 @@ def send_to_logstash(host: str, port: int, data: dict) -> None:
     client.send([json.dumps(data)])
     print("[ingestion_manager] Sent to Logstash! 🚀")
 
+def is_valid_response(response: dict) -> bool:
+    """
+    Checks if the response is valid.
+
+    Args:
+        response (dict): The response to check.
+
+    Returns:
+        bool: True if the response is valid, False otherwise.
+    """
+    return response.get("status") == "success"
 
 def get_all_countries() -> list:
     """
     Retrieves all countries.
     """
     response = requests.get(ALL_COUNTRIES_URL, timeout=15).json()
+    
+    while not is_valid_response(response):
+        error = response.get("data", []).get("message", "Unknown error")
+        print(f"[ingestion_manager] Failed to fetch data. {error}. Waiting 5 sec.. [CTRL+C to stop]")
+        time.sleep(5)
+        response = requests.get(ALL_COUNTRIES_URL, timeout=15).json()
+
     countries = response.get("data", [])
     return countries
 
@@ -129,7 +164,14 @@ def get_states_by_country(country_name: str) -> list:
     """
     url = f"http://api.airvisual.com/v2/states?country={country_name}&key={API_KEY}"
     response = requests.get(url, timeout=15).json()
-    states = response.get("data")
+
+    while not is_valid_response(response):
+        error = response.get("data", []).get("message", "Unknown error")
+        print(f"[ingestion_manager] Failed to fetch data. {error}. Waiting 5 sec.. [CTRL+C to stop]")
+        time.sleep(5)
+        response = requests.get(url, timeout=15).json()
+
+    states = response.get("data", [])
     return states
 
 def get_cities_by_state_country(state_name: str, country_name: str) -> list:
@@ -138,6 +180,13 @@ def get_cities_by_state_country(state_name: str, country_name: str) -> list:
     """
     url = f"http://api.airvisual.com/v2/cities?state={state_name}&country={country_name}&key={API_KEY}"
     response = requests.get(url, timeout=15).json()
+
+    while not is_valid_response(response):
+        error = response.get("data", []).get("message", "Unknown error")
+        print(f"[ingestion_manager] Failed to fetch data. {error}. Waiting 5 sec.. [CTRL+C to stop]")
+        time.sleep(5)
+        response = requests.get(url, timeout=15).json()
+    
     cities = response.get("data", [])
     return cities
 
@@ -152,6 +201,7 @@ async def main() -> None:
     print("[ingestion_manager] Retrieving data of major of cities...")
     states = get_states_by_country(COUNTRY_NAME)
     states_list = [elem['state'] for elem in states]
+
     states_list.remove("Abruzzo") # Abruzzo is not in the list of allowed states
     states_list.remove("Basilicate") # Basilicate is not in the list of allowed states
 
@@ -214,7 +264,7 @@ if __name__ == '__main__':
             case "NODEMO":
                 asyncio.run(main())
             case _:
-                send_to_logstash(LOGSTASH_HOSTNAME, LOGSTASH_PORT, get_data())
+                send_to_logstash(LOGSTASH_HOSTNAME, LOGSTASH_PORT, get_data_handler())
     
     except KeyboardInterrupt:
         print("[ingestion-manager] Program exited")

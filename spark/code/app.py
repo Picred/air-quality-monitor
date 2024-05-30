@@ -1,28 +1,25 @@
-from pyspark import SparkContext
-from pyspark.sql import SparkSession
-from pyspark.streaming import StreamingContext
-from pyspark.sql.dataframe import DataFrame
+from pyspark import SparkContext # type: ignore
+from pyspark.sql import SparkSession # type: ignore
+from pyspark.streaming import StreamingContext # type: ignore
+from pyspark.sql.dataframe import DataFrame #type: ignore
 
-sc = SparkContext(appName="AQM_test")
+sc = SparkContext(appName="Air Quality Monitor")
 spark = SparkSession(sc)
 sc.setLogLevel("ERROR")
 
 kafkaServer="kafkaServer:9092"
 topic = "air-quality-monitor"
 
-# Streaming Query
-
 df = spark \
   .readStream \
   .format("kafka") \
   .option("kafka.bootstrap.servers", kafkaServer) \
   .option("subscribe", topic) \
+  .option("startingOffsets", "earliest") \
   .load()
 
-# Arricchimento. Successivamente aggiungeremo una Transform, cioè verranno aggiunte delle colonne
 df=df.selectExpr("CAST(timestamp AS STRING)","CAST(value AS STRING)") # arriva un array di byte, non ho serializzato quindi devo farlo per forza.
 
-# Scrivo su console. Sarà in formato ES successivamente
 df.writeStream \
   .format('console')\
   .option('truncate', 'false')\
