@@ -97,14 +97,5 @@ docker run -it --rm --hostname="ingestion_manager" --network aqm -e DATA_ACTION=
 
 
 ## Spark
-<!--  TODO -->
-```bash
-# Spark 3.2.1 (2023)
-wget https://archive.apache.org/dist/spark/spark-3.2.1/spark-3.2.1-bin-hadoop3.2.tgz
-
-# TODO check version used
-# Spark 3.5.1 (2024?)
-wget https://archive.apache.org/dist/spark/spark-3.5.1/spark-3.5.1-bin-hadoop3.tgz
-```
 
 ---
