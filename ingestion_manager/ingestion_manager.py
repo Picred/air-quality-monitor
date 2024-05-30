@@ -36,7 +36,7 @@ STATE_NAME = os.getenv("STATE_NAME", "Sicily")
 GPS_LAT = float(os.getenv("GPS_LAT", "37.500000"))
 GPS_LON = float(os.getenv("GPS_LON", "15.090278"))
 CITY_TO_SCAN = os.getenv("CITY_TO_SCAN", "Catania")
-DATA_ACTION = os.getenv("DATA_ACTION", "ALL_CITIES_BY_STATE_COUNTRY")
+DATA_ACTION = os.getenv("DATA_ACTION", "DEMO")
 
 ALL_COUNTRIES_URL = f"http://api.airvisual.com/v2/countries?key={API_KEY}"
 ALL_STATES_BY_COUNTRY_URL = f"http://api.airvisual.com/v2/states?country={COUNTRY_NAME}&key={API_KEY}"
