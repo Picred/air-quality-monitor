@@ -29,6 +29,8 @@ import socket
 import os
 import requests
 from pylogbeat import PyLogBeatClient
+from utils.extract_data import extract_data
+
 
 API_KEY = os.getenv("API_KEY", "0e72cb61-87b6-4ab4-b422-0886e1305ac6")
 COUNTRY_NAME = os.getenv("COUNTRY_NAME", "Italy")
@@ -85,7 +87,7 @@ def get_data_handler() -> dict:
         print(f"[ingestion_manager] Failed to fetch data. {error}. Waiting 5 sec.. [CTRL+C to stop]")
         time.sleep(5)
         response = get_data()
-    return response
+    return response.get("data")
 
 
 def check_api_key() -> bool:
@@ -127,6 +129,8 @@ def send_to_logstash(host: str, port: int, data: dict) -> None:
     if type(data.get("data")) == list:
         print(data)
         return
+
+    data = extract_data(data)
     client = PyLogBeatClient(host, port)
     client.send([json.dumps(data)])
     print("[ingestion_manager] Sent to Logstash! 🚀")
@@ -261,7 +265,7 @@ async def demo() -> None:
     """
     demo_data = get_demo_data()
     for element in demo_data:
-        send_to_logstash(LOGSTASH_HOSTNAME, LOGSTASH_PORT, element)
+        send_to_logstash(LOGSTASH_HOSTNAME, LOGSTASH_PORT, element.get("data"))
     
 
 
