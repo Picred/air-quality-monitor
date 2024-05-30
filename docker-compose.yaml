@@ -77,8 +77,20 @@ services:
     volumes:
       - ./spark/code/app.py:/opt/aqm/app.py
     command: > 
-      /opt/spark/bin/spark-submit --conf spark.driver.extraJavaOptions="-Divy.cache.dir=/tmp -Divy.home=/tmp" --packages org.apache.spark:spark-sql-kafka-0-10_2.12:3.5.1  /opt/aqm/app.py 
+      /opt/spark/bin/spark-submit --conf spark.driver.extraJavaOptions="-Divy.cache.dir=/tmp -Divy.home=/tmp" --packages org.apache.spark:spark-sql-kafka-0-10_2.12:3.5.1 --packages org.elasticsearch:elasticsearch-spark-20_2.12:8.13.4 /opt/aqm/app.py 
     networks:
       aqm:
     ports:
       - "4040:4040"
+
+  # elasticsearch:
+  #   image: docker.elastic.co/elasticsearch/elasticsearch:8.13.4
+  #   hostname: elasticsearch
+  #   container_name: elasticsearch
+  #   environment:
+  #     - discovery.type=single-node
+  #     - xpack.security.enabled=false
+  #   networks:
+  #     aqm:
+  #   ports:
+  #    - "9200:9200"
