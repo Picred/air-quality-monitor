@@ -29,6 +29,7 @@ services:
     environment:
       - KAFKA_ACTION=start-kafka
     container_name: kafkaServer
+    hostname: kafkaServer
     networks:
       aqm:
         ipv4_address: 10.0.100.23
@@ -65,15 +66,19 @@ services:
     container_name: ingestion_manager
     depends_on:
       - logstash
+      - spark
     networks:
       aqm:
 
-  # spark:
-  #   build: 
-  #     context: spark
-  #     dockerfile: Dockerfile
-  #   ports:
-  #     - 4040:4040
-  #   container_name: spark
-  #   depends_on: 
-  #       - kafkaServer
+  spark:
+    image: apache/spark
+    hostname: spark
+    container_name: spark
+    volumes:
+      - ./spark/code/app.py:/opt/aqm/app.py
+    command: > 
+      /opt/spark/bin/spark-submit --conf spark.driver.extraJavaOptions="-Divy.cache.dir=/tmp -Divy.home=/tmp" --packages org.apache.spark:spark-sql-kafka-0-10_2.12:3.5.1  /opt/aqm/app.py 
+    networks:
+      aqm:
+    ports:
+      - "4040:4040"
