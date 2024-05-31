@@ -56,6 +56,12 @@ df=df.selectExpr("CAST(timestamp AS STRING)","CAST(value AS STRING)") # arriva u
 # es_host = "http://elasticsearch:9200"  # Modifica se necessario
 # es_index = "air-quality-monitor"
 
+df.writeStream \
+  .format('console')\
+  .option('truncate', 'false')\
+  .start()\
+  .awaitTermination()
+
 # # Scrittura dello stream su Elasticsearch
 # df.writeStream \
 #     .format("org.elasticsearch.spark.sql") \
