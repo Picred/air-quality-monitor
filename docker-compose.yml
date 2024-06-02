@@ -66,7 +66,6 @@ services:
     container_name: ingestion_manager
     depends_on:
       - logstash
-      - spark
     networks:
       aqm:
 
@@ -77,11 +76,14 @@ services:
     volumes:
       - ./spark/code/app.py:/opt/aqm/app.py
     command: > 
-      /opt/spark/bin/spark-submit --conf spark.driver.extraJavaOptions="-Divy.cache.dir=/tmp -Divy.home=/tmp" --packages org.apache.spark:spark-sql-kafka-0-10_2.12:3.5.1 --packages org.elasticsearch:elasticsearch-spark-20_2.12:8.13.4 /opt/aqm/app.py 
+      /opt/spark/bin/spark-submit --conf spark.driver.extraJavaOptions="-Divy.cache.dir=/tmp -Divy.home=/tmp" --packages org.apache.spark:spark-sql-kafka-0-10_2.12:3.5.1,org.elasticsearch:elasticsearch-spark-30_2.12:8.13.4  /opt/aqm/app.py
     networks:
       aqm:
     ports:
       - "4040:4040"
+    depends_on:
+      ingestion_manager:
+        condition: service_completed_successfully
 
   # topics:
   #   image: apache/kafka:latest
