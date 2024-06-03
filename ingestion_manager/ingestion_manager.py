@@ -28,7 +28,7 @@ import time
 import socket
 import os
 import requests
-from pylogbeat import PyLogBeatClient
+from pylogbeat import PyLogBeatClient #type: ignore
 from utils.extract_data import extract_data
 
 
@@ -194,7 +194,7 @@ def get_cities_by_state_country(state_name: str, country_name: str) -> list:
         print(f"[ingestion_manager] Failed to fetch data. {error}. Waiting 5 sec.. [CTRL+C to stop]")
         time.sleep(5)
         response = requests.get(url, timeout=15).json()
-    
+
     cities = response.get("data", [])
     return cities
 
@@ -209,12 +209,6 @@ async def main() -> None:
     print("[ingestion_manager] Retrieving data of major of cities...")
     states = get_states_by_country(COUNTRY_NAME)
     states_list = [elem['state'] for elem in states]
-
-    # Not working states
-    # states_list.remove("Abruzzo") 
-    # states_list.remove("Basilicate")
-    # states_list.remove("Molise")
-    # states_list.remove("Veneto")
 
     time.sleep(1)
 
@@ -247,7 +241,7 @@ async def main() -> None:
             time.sleep(5)
             response = requests.get(url, timeout=15).json()
 
-        send_to_logstash(LOGSTASH_HOSTNAME, LOGSTASH_PORT, response)
+        send_to_logstash(LOGSTASH_HOSTNAME, LOGSTASH_PORT, response.get("data"))
         time.sleep(10)
 
 
@@ -266,7 +260,7 @@ async def demo() -> None:
     demo_data = get_demo_data()
     for element in demo_data:
         send_to_logstash(LOGSTASH_HOSTNAME, LOGSTASH_PORT, element.get("data"))
-    
+
 
 
 if __name__ == '__main__':
@@ -285,6 +279,6 @@ if __name__ == '__main__':
                 asyncio.run(main())
             case _:
                 send_to_logstash(LOGSTASH_HOSTNAME, LOGSTASH_PORT, get_data_handler())
-    
+
     except KeyboardInterrupt:
         print("[ingestion-manager] Program exited")

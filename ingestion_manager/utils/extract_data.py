@@ -1,4 +1,4 @@
-"""Cleanns raw data from GET request"""
+"""Cleans raw data from GET request"""
 def extract_data(data_raw: dict) -> dict:
     """
     Extracts relevant air quality data from the HTML data_raw.
