@@ -1,4 +1,4 @@
-version: '3.8'
+# version: '3.8'
 
 networks:
   aqm:
@@ -85,30 +85,18 @@ services:
       ingestion_manager:
         condition: service_completed_successfully
 
-  # topics:
-  #   image: apache/kafka:latest
-  #   hostname: topics
-  #   container_name: topics
-  #   command: >
-  #     bash -c "
-  #     /opt/kafka/bin/kafka-topics.sh --create --topic air-quality-monitor --bootstrap-server 10.0.100.23:9092
-  #     "
-  #   depends_on:
-  #     - kafka_server
-  #     - elasticsearch
-
-  # elasticsearch:
-  #   image: docker.elastic.co/elasticsearch/elasticsearch:8.13.4
-  #   environment:
-  #     - discovery.type=single-node
-  #     - xpack.security.enabled=false
-  #   mem_limit: 1 GB
-  #   hostname: elasticsearch
-  #   container_name: elasticsearch
-  #   networks:
-  #     aqm:
-  #   ports:
-  #     - "9200:9200"
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.13.4
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+    mem_limit: 1 GB
+    hostname: elasticsearch
+    container_name: elasticsearch
+    networks:
+      aqm:
+    ports:
+      - "9200:9200"
 
   # kibana:
   #   hostname: kibana
