@@ -1,104 +1,74 @@
-"""Handles the data ingestion process for air quality.
-
-This module contains functions to retrieve air quality data from the AirVisual API,
-send data to Logstash for ingestion, and parse raw data to extract relevant weather
-and air quality information.
-
-Environment Variables:
-    API_KEY (str): The API key for accessing AirVisual data.
-    COUNTRY_NAME (str): The name of the country of interest to retrieve data for.
-    STATE_NAME (str): The name of the state within the country.
-    GPS_LAT (float): The latitude for GPS location identification for data retrieval.
-    GPS_LON (float): The longitude for GPS location identification for data retrieval.
-    CITY_TO_SCAN (str): The name of the city of interest for data retrieval.
-    DATA_ACTION (str): The action to perform for data retrieval (e.g., "NEAREST_IP_CITY").
-
-Functions:
-    get_data: Retrieves air quality data based on the specified action.
-    send_to_logstash: Sends data to Logstash for ingestion.
-    extract_data: Extracts relevant air quality data from the raw JSON response.
-    test_logstash: Checks if Logstash is ready to receive data.
-    check_api_key: Checks if the API key is set.
-    main: The main asynchronous function for executing the script.
-"""
 import asyncio
 import json
 import sys
 import time
 import socket
-import requests
 from pylogbeat import PyLogBeatClient #type: ignore
 from utils.extract_data import extract_data
 from utils.retrieve_data import (
-    config,
     get_states_by_country,
     get_cities_by_state_country,
-    is_valid_response,
-    get_data
+    make_request,
+    get_data,
+    check_api_key
 )
+from utils.setup import logger, config, LOGSTASH_HOSTNAME, LOGSTASH_PORT
 
 
-LOGSTASH_PORT = 5044
-LOGSTASH_HOSTNAME = "logstash"
-
-
-
-def check_api_key() -> bool:
+class LogstashHandler:
     """
-    Checks if the API key is set.
-
-    Returns:
-        bool: True if API key is set, False otherwise.
-    """
-    return config['API_KEY'] is not None
-
-
-def test_logstash() -> None:
-    """
-    Checks if Logstash is ready for receiving data.
-    """
-    while True:
-        try:
-            sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            sock.connect((LOGSTASH_HOSTNAME, LOGSTASH_PORT))
-            sock.close()
-            print("[ingestion_manager] Logstash is ready!")
-            break
-        except socket.error:
-            print("[ingestion_manager] Logstash not ready, waiting... [CTRL+C to stop]")
-            time.sleep(5)
-            continue
-
-
-def send_to_logstash(host: str, port: int, data: dict) -> None:
-    """
-    Sends data to Logstash for ingestion.
-
+    A class for handling communication with Logstash.
     Args:
         host (str): The hostname or IP address of the Logstash server.
-        port (int): The port number of the Logstash server.
-        data (dict): The data to be sent to Logstash.
+        port (int): The port number on which Logstash is running.
     """
-    if type(data.get("data")) == list:
-        print(data)
-        return
 
-    data = extract_data(data)
-    client = PyLogBeatClient(host, port)
-    client.send([json.dumps(data)])
-    print("[ingestion_manager] Sent to Logstash! 🚀")
+    def __init__(self, host: str, port: int):
+        self.host = host
+        self.port = port
+
+    def test_logstash(self):
+        """
+        Checks if Logstash is ready for receiving data.
+        """
+        while True:
+            try:
+                with socket.create_connection((self.host, self.port)):
+                    logger.info("Logstash is ready!")
+                    break
+            except socket.error:
+                logger.warning("Logstash not ready, waiting... [CTRL+C to stop]")
+                time.sleep(5)
+
+    def send_to_logstash(self, data: dict):
+        """
+        Sends data to Logstash for ingestion.
+
+        Args:
+            data (dict): The data to be sent to Logstash.
+        """
+        if isinstance(data.get("data"), list):
+            logger.info("Data to be sent: %s", data)
+            return
+
+        data = extract_data(data)
+        client = PyLogBeatClient(self.host, self.port)
+        client.send([json.dumps(data)])
+        logger.info("Sent to Logstash! 🚀")
 
 
-
-
-async def main() -> None:
+async def retrieve_and_send_data(logstash_handler: LogstashHandler):
     """
-    The main asynchronous function for executing the script.
+    Retrieves and sends air quality data to Logstash.
+
+    Args:
+        logstash_handler (LogstashHandler): The handler for sending data to Logstash.
     """
-    print("[ingestion_manager] Starting data ingestion process...")
-    print("[ingestion_manager] This is not a demo. Real data will be retrieved. It may take a while. 🕒")
-    print(f"[ingestion_manager] Selected country: {config['COUNTRY_NAME']}")
-    print("[ingestion_manager] Retrieving data of major of cities...")
+    logger.info("Starting data ingestion process...")
+    logger.info("This is not a demo. Real data will be retrieved. It may take a while. 🕒")
+    logger.info("Selected country: %s", config['COUNTRY_NAME'])
+    logger.info("Retrieving data of major cities...")
+
     states = get_states_by_country(config['COUNTRY_NAME'])
     states_list = [elem['state'] for elem in states]
 
@@ -106,34 +76,29 @@ async def main() -> None:
 
     for state in states_list:
         state = state.replace(" ", "+")
-        print(f"State retrieved: {state}")
+        logger.info("State retrieved: %s", state)
         cities = get_cities_by_state_country(state, config['COUNTRY_NAME'])
 
         if not cities:
             continue
-        city_present = any('city' in elem for elem in cities)
-        if not city_present:
-            print("[ingestion_manager] No cities found for this state. Maybe too many requests. Waiting 10 sec.. [CTRL+C to stop]")
+
+        cities_list = [elem['city'] for elem in cities if 'city' in elem]
+        if not cities_list:
+            logger.warning("No cities found for this state. Maybe too many requests.\
+                            Waiting 10 sec. [CTRL+C to stop]")
             time.sleep(10)
             continue
 
-        cities_list = [elem['city'] for elem in cities if 'city' in elem]
-        print(f"[ingestion_manager] Retrieved cities {cities_list}")
+        logger.info("Retrieved cities %s", cities_list)
         time.sleep(10)
 
-        city = cities_list[0]
-        city = city.replace(" ", "+")
-        print(f"[ingestion_manager] City selected: {city}")
-        url = f"http://api.airvisual.com/v2/city?city={city}&state={state}&country={config['COUNTRY_NAME']}&key={config['API_KEY']}"
-        response = requests.get(url, timeout=15).json()
+        city = cities_list[0].replace(" ", "+")
+        logger.info("City selected: %s", city)
+        url = f"http://api.airvisual.com/v2/city?city={city}&state={state}&country=\
+            {config['COUNTRY_NAME']}&key={config['API_KEY']}"
+        response = make_request(url)
 
-        while not is_valid_response(response):
-            error = response.get("data", []).get("message", "Unknown error")
-            print(f"[ingestion_manager] Failed to fetch data. {error}. Waiting 5 sec.. [CTRL+C to stop]")
-            time.sleep(5)
-            response = requests.get(url, timeout=15).json()
-
-        send_to_logstash(LOGSTASH_HOSTNAME, LOGSTASH_PORT, response.get("data"))
+        logstash_handler.send_to_logstash(response)
         time.sleep(10)
 
 
@@ -145,32 +110,41 @@ def get_demo_data() -> dict:
         return json.load(f)
 
 
-async def demo() -> None:
+async def demo(logstash_handler: LogstashHandler):
     """
     Demo function to test the data ingestion process.
+
+    Args:
+        logstash_handler (LogstashHandler): The handler for sending data to Logstash.
     """
     demo_data = get_demo_data()
     for element in demo_data:
-        send_to_logstash(LOGSTASH_HOSTNAME, LOGSTASH_PORT, element.get("data"))
+        logstash_handler.send_to_logstash(element.get("data"))
 
+
+async def main():
+    """
+    The main asynchronous function for executing the script.
+    """
+    logstash_handler = LogstashHandler(LOGSTASH_HOSTNAME, LOGSTASH_PORT)
+    logstash_handler.test_logstash()
+
+    data_action = config.get('DATA_ACTION', 'NODEMO')
+    if data_action == "DEMO":
+        await demo(logstash_handler)
+    elif data_action == "NODEMO":
+        await retrieve_and_send_data(logstash_handler)
+    else:
+        logstash_handler.send_to_logstash(get_data())
 
 
 if __name__ == '__main__':
     if not check_api_key():
-        print ("[ingestion_manager] API_KEY environment variable not set!!")
-        sys.exit()
-    print("[ingestion_manager] API_KEY is set 👌")
-
-    test_logstash()
+        logger.error("API_KEY environment variable not set!!")
+        sys.exit(1)
+    logger.info("API_KEY is set 👌")
 
     try:
-        match config['DATA_ACTION']:
-            case "DEMO":
-                asyncio.run(demo())
-            case "NODEMO":
-                asyncio.run(main())
-            case _:
-                send_to_logstash(LOGSTASH_HOSTNAME, LOGSTASH_PORT, get_data())
-
+        asyncio.run(main())
     except KeyboardInterrupt:
-        print("[ingestion-manager] Program exited")
+        logger.info("Program exited")

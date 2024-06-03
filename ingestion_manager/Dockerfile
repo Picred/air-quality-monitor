@@ -6,4 +6,4 @@ RUN pip3 install -r requirements.txt
 
 COPY . .
 
-ENTRYPOINT ["python3", "ingestion_manager.py"]"
+ENTRYPOINT ["python3", "ingestion_manager.py"]
