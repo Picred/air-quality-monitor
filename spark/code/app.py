@@ -1,88 +1,110 @@
-from pyspark import SparkContext # type: ignore
-from pyspark.sql import SparkSession # type: ignore
-from pyspark.streaming import StreamingContext # type: ignore
-from pyspark.sql.dataframe import DataFrame #type: ignore
 from pyspark.sql import SparkSession
-from pyspark.conf import SparkConf
-import pyspark.sql.types as tp
-from pyspark.sql.functions import from_json
+from pyspark.sql.functions import col, from_json, to_timestamp
+from pyspark.sql.types import StructType, StructField, StringType, DoubleType, IntegerType
+from pyspark.ml.feature import VectorAssembler, StringIndexer
+from pyspark.ml.regression import RandomForestRegressor
+from pyspark.ml.evaluation import RegressionEvaluator
+from pyspark.ml import Pipeline
 
-# sc = SparkContext(appName="Air Quality Monitor")
-# spark = SparkSession(sc)
-# sc.setLogLevel("ERROR")
-#  ------------------------------------------------------
-kafkaServer="kafkaServer:9092"
+kafkaServer = "kafkaServer:9092"
 topic = "air-quality-monitor"
-elastic_index="aqm"
+elastic_index = "aqm"
+es_host = "elasticsearch:9200"
 
-sparkConf = SparkConf().set("es.nodes", "elasticsearch") \
-                        .set("es.port", "9200")
+spark = SparkSession.builder \
+    .appName("AirQualityPrediction") \
+    .config("spark.sql.streaming.checkpointLocation", "/tmp/checkpoints") \
+    .getOrCreate()
 
-spark = SparkSession.builder.appName("Air Quality Monitor").config(conf=sparkConf).getOrCreate()
-# To reduce verbose output
-spark.sparkContext.setLogLevel("ERROR") 
+test_df = spark.createDataFrame([("test",)], ["message"])
+test_df.write \
+    .format("org.elasticsearch.spark.sql") \
+    .option("es.resource", f"{elastic_index}") \
+    .option("es.nodes", es_host) \
+    .option("es.nodes.wan.only", "true") \
+    .mode("append") \
+    .save()
 
-
-df = spark \
-  .readStream \
-  .format("kafka") \
-  .option("kafka.bootstrap.servers", kafkaServer) \
-  .option("subscribe", topic) \
-  .option("startingOffsets", "earliest") \
-  .load()
-
-
-aqm_data = tp.StructType([
-    tp.StructField(name= 'city',       dataType= tp.StringType(),  nullable= True),
-    tp.StructField(name= 'state',      dataType= tp.StringType(),  nullable= True),
-    tp.StructField(name= 'country',    dataType= tp.StringType(),  nullable= True),
-    tp.StructField(name= 'location',   dataType= tp.StringType(),  nullable= True),
-    tp.StructField(name= 'pollution',  dataType= tp.StringType(),  nullable= True),
-    tp.StructField(name= 'weather',    dataType= tp.StringType(),  nullable= True),
-    tp.StructField(name= 'gps_lat',    dataType= tp.StringType(),  nullable= True),
-    tp.StructField(name= 'gps_lon',    dataType= tp.StringType(),  nullable= True),
-    tp.StructField(name= 'pollution_timestamp', dataType= tp.StringType(),  nullable= True),
-    tp.StructField(name= 'aqius',      dataType= tp.StringType(),  nullable= True),
-    tp.StructField(name= 'mainus',     dataType= tp.StringType(),  nullable= True),
-    tp.StructField(name= 'aqicn',      dataType= tp.StringType(),  nullable= True),
-    tp.StructField(name= 'maincn',     dataType= tp.StringType(),  nullable= True),
-    tp.StructField(name= 'weather_timestamp', dataType= tp.StringType(),  nullable= True),
-    tp.StructField(name= 'temperature',dataType= tp.StringType(),  nullable= True),
-    tp.StructField(name= 'pression',   dataType= tp.StringType(),  nullable= True),
-    tp.StructField(name= 'humidity',   dataType= tp.StringType(),  nullable= True),
-    tp.StructField(name= 'wind_speed', dataType= tp.StringType(),  nullable= True),
-    tp.StructField(name= 'wind_direction', dataType= tp.StringType(),  nullable= True),
-    tp.StructField(name= 'icon',       dataType= tp.StringType(),  nullable= True)
-
-    
-    
+schema = StructType([
+    StructField("wind_direction", DoubleType(), True),
+    StructField("weather_timestamp", StringType(), True),
+    StructField("state", StringType(), True),
+    StructField("city", StringType(), True),
+    StructField("gps_lat", DoubleType(), True),
+    StructField("wind_speed", DoubleType(), True),
+    StructField("tags", StringType(), True),
+    StructField("country", StringType(), True),
+    StructField("temperature", DoubleType(), True),
+    StructField("mainus", StringType(), True),
+    StructField("aqicn", IntegerType(), True),
+    StructField("icon", StringType(), True),
+    StructField("gps_lon", DoubleType(), True),
+    StructField("@timestamp", StringType(), True),
+    StructField("maincn", StringType(), True),
+    StructField("pression", DoubleType(), True),
+    StructField("pollution_timestamp", StringType(), True),
+    StructField("aqius", IntegerType(), True),
+    StructField("humidity", IntegerType(), True),
+    StructField("@version", StringType(), True)
 ])
 
-df = df.selectExpr("CAST(value AS STRING)") \
-    .select(from_json("value", aqm_data).alias("data")) \
+df = spark \
+    .readStream \
+    .format("kafka") \
+    .option("kafka.bootstrap.servers", kafkaServer) \
+    .option("subscribe", topic) \
+    .option("startingOffsets", "earliest") \
+    .load()
 
-df = df.select("data")
-# df=df.selectExpr("CAST(timestamp AS STRING)","CAST(value AS STRING)") # arriva un array di byte, non ho serializzato quindi devo farlo per forza.
-# # Configurazione di Elasticsearch
-es_host = "http://elasticsearch:9200"  # Modifica se necessario
+df = df.selectExpr("CAST(value AS STRING) as json").select(from_json(col("json"), schema).alias("data")).select("data.*")
 
-df.writeStream \
-  .format('console')\
-  .option('truncate', 'false')\
-  .start()\
-  .awaitTermination()
+df = df.withColumn("weather_timestamp", to_timestamp(col("weather_timestamp")))
+df = df.withColumn("pollution_timestamp", to_timestamp(col("pollution_timestamp")))
 
-# df.writeStream \
-#    .option("checkpointLocation", "/tmp/") \
-#    .format("es") \
-#    .start(elastic_index) \
-#    .awaitTermination()
+indexers = [StringIndexer(inputCol=column, outputCol=column+"_index") for column in ["state", "city", "tags", "country"]]
+pipeline = Pipeline(stages=indexers)
 
-# # Scrittura dello stream su Elasticsearch
-# df.writeStream \
-#     .format("org.elasticsearch.spark.sql") \
-#     .option("checkpointLocation", "/tmp/") \
-#     .option("es.nodes", es_host) \
-#     .option("es.resource", elastic_index) \
-#     .start() \
-#     .awaitTermination()
+feature_columns = ["wind_direction", "wind_speed", "temperature", "pression", "humidity", "state_index", "city_index", "tags_index", "country_index"]
+assembler = VectorAssembler(inputCols=feature_columns, outputCol="features")
+
+rf = RandomForestRegressor(featuresCol="features", labelCol="aqius")
+
+def train_and_predict(batch_df, batch_id):
+    if not batch_df.isEmpty():
+        batch_df = pipeline.fit(batch_df).transform(batch_df)
+        batch_df = assembler.transform(batch_df)
+        
+        # Suddivisione ei dati in training e test
+        (trainingData, testData) = batch_df.randomSplit([0.8, 0.2])
+
+        model = rf.fit(trainingData)
+
+        predictions = model.transform(testData)
+        evaluator = RegressionEvaluator(labelCol="aqius", predictionCol="prediction", metricName="rmse")
+        rmse = evaluator.evaluate(predictions)
+        print(f"Root Mean Squared Error (RMSE) on test data = {rmse}")
+
+        streaming_predictions = model.transform(batch_df)
+        
+        output = streaming_predictions.select(
+            col("weather_timestamp").alias("timestamp"),
+            col("prediction").alias("predicted_aqius"),
+            *feature_columns
+        )
+        
+        output.show()
+
+        output.write \
+            .format("org.elasticsearch.spark.sql") \
+            .option("es.resource", f"{elastic_index}") \
+            .option("es.nodes", es_host) \
+            .option("es.nodes.wan.only", "true") \
+            .mode("append") \
+            .save()
+
+query = df.writeStream \
+    .foreachBatch(train_and_predict) \
+    .outputMode("append") \
+    .start()
+
+query.awaitTermination()

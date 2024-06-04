@@ -70,11 +70,15 @@ services:
       aqm:
 
   spark:
-    image: apache/spark:3.5.1
+    build:
+      context: spark/
+      dockerfile: Dockerfile
+    # image: apache/spark:3.5.1
     hostname: spark
     container_name: spark
     volumes:
       - ./spark/code/app.py:/opt/aqm/app.py
+      - ./ingestion_manager/demo_data.json:/opt/spark/work-dir/demo_data.json
     command: > 
       /opt/spark/bin/spark-submit --conf spark.driver.extraJavaOptions="-Divy.cache.dir=/tmp -Divy.home=/tmp" --packages org.apache.spark:spark-sql-kafka-0-10_2.12:3.5.1,org.elasticsearch:elasticsearch-spark-30_2.12:8.13.4  /opt/aqm/app.py
     networks:
