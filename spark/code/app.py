@@ -45,6 +45,8 @@ schema = StructType([
     StructField("humidity", IntegerType(), True),
 ])
 
+
+
 # Lettura dei dati da Kafka
 df = spark \
     .readStream \
@@ -103,7 +105,19 @@ def train_and_predict(batch_df, batch_id):
             output = streaming_predictions.select(
                 col("weather_timestamp").alias("timestamp"),
                 col("prediction").alias("predicted_aqius"),
-                *feature_columns
+                *feature_columns,
+                "weather_timestamp",
+                "state",
+                "city",
+                "gps_lat",
+                "country",
+                "mainus",
+                "aqicn",
+                "icon",
+                "gps_lon",
+                "maincn",
+                "pollution_timestamp",
+                "aqius",
             )
             
             # Log dei dati prima di scriverli su Elasticsearch
