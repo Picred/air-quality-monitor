@@ -30,6 +30,12 @@ services:
       - KAFKA_ACTION=start-kafka
     container_name: kafkaServer
     hostname: kafkaServer
+    # healthcheck:
+    #   test: ["CMD", "nc", "-z", "localhost", "9092"]
+    #   interval: 15s
+    #   timeout: 15s
+    #   retries: 5
+    #   start_period: 20s
     networks:
       aqm:
         ipv4_address: 10.0.100.23
@@ -73,9 +79,9 @@ services:
     build:
       context: spark/
       dockerfile: Dockerfile
-    # image: apache/spark:3.5.1
     hostname: spark
     container_name: spark
+    restart: always
     volumes:
       - ./spark/code/app.py:/opt/aqm/app.py
       - ./ingestion_manager/demo_data.json:/opt/spark/work-dir/demo_data.json
@@ -87,6 +93,7 @@ services:
       - "4040:4040"
     depends_on:
       - kafka_server
+      - elasticsearch
 
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:8.13.4
@@ -103,10 +110,11 @@ services:
 
   kibana:
     hostname: kibana
+    container_name: kibana
     image: docker.elastic.co/kibana/kibana:8.13.4
     ports:
       - "5601:5601"
     volumes:
       - ./kibana/kibana.yml:/usr/share/kibana/config/kibana.yml
-    # depends_on:
-    #   - elasticsearch
+    networks:
+      aqm:
