@@ -30,6 +30,7 @@ services:
       - KAFKA_ACTION=start-kafka
     container_name: kafkaServer
     hostname: kafkaServer
+    restart: always
     networks:
       aqm:
         ipv4_address: 10.0.100.23

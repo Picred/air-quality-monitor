@@ -26,7 +26,7 @@ spark = SparkSession.builder \
 # Definizione dello schema per i dati in input
 schema = StructType([
     StructField("wind_direction", DoubleType(), True),
-    StructField("weather_timestamp", StringType(), True), # TimestampType()
+    StructField("weather_timestamp", StringType(), True),
     StructField("state", StringType(), True),
     StructField("city", StringType(), True),
     StructField("gps_lat", DoubleType(), True),
@@ -40,7 +40,7 @@ schema = StructType([
     StructField("gps_lon", DoubleType(), True),
     StructField("maincn", StringType(), True),
     StructField("pression", DoubleType(), True),
-    StructField("pollution_timestamp", StringType(), True), # TimestampType()
+    StructField("pollution_timestamp", StringType(), True),
     StructField("aqius", IntegerType(), True),
     StructField("humidity", IntegerType(), True),
 ])
@@ -57,94 +57,107 @@ df = spark \
     .load()
 
 # Conversione dei dati da formato Kafka
-df = df.selectExpr("CAST(value AS STRING) as json").select(from_json(col("json"), schema).alias("data")).select("data.*")
+# df = df.selectExpr("CAST(value AS STRING) as json").select(from_json(col("json"), schema).alias("data")).select("data.*")
+df = df.selectExpr("CAST(value AS STRING)") \
+    .select(from_json("value", schema).alias("data")) \
+
+df = df.select("data")
+
+df.writeStream \
+    .format("org.elasticsearch.spark.sql") \
+    .option("es.resource", f"{elastic_index}") \
+    .option("es.nodes", es_host) \
+    .option("es.nodes.wan.only", "true") \
+    .start()\
+    .awaitTermination()
 
 # Preprocessing dei dati
-df = df.withColumn("weather_timestamp", to_timestamp(col("weather_timestamp")))
-df = df.withColumn("pollution_timestamp", to_timestamp(col("pollution_timestamp")))
+# df = df.withColumn("weather_timestamp", to_timestamp(col("weather_timestamp")))
+# df = df.withColumn("pollution_timestamp", to_timestamp(col("pollution_timestamp")))
 
-# Codifica delle variabili categoriche
-indexers = [StringIndexer(inputCol=column, outputCol=column+"_index") for column in ["state", "city", "country"]]
-pipeline = Pipeline(stages=indexers)
+# # Codifica delle variabili categoriche
+# indexers = [StringIndexer(inputCol=column, outputCol=column+"_index") for column in ["state", "city", "country"]]
+# pipeline = Pipeline(stages=indexers)
 
-# Selezione delle caratteristiche
-feature_columns = ["wind_direction", "wind_speed", "temperature", "pression", "humidity", "state_index", "city_index", "country_index"]
-assembler = VectorAssembler(inputCols=feature_columns, outputCol="features")
+# # Selezione delle caratteristiche
+# feature_columns = ["wind_direction", "wind_speed", "temperature", "pression", "humidity", "state_index", "city_index", "country_index"]
+# assembler = VectorAssembler(inputCols=feature_columns, outputCol="features")
 
-# Modello di regressione
-lr = LinearRegression(featuresCol="features", labelCol="aqius")
+# # Modello di regressione
+# lr = LinearRegression(featuresCol="features", labelCol="aqius")
 
 # Funzione di aggiornamento del modello
-def train_and_predict(batch_df, batch_id):
-    if not batch_df.isEmpty():
-        logger.info("Processing batch id: %d", batch_id)
-        logger.info("Batch data schema:")
-        batch_df.printSchema()
-        logger.info("Batch data preview:")
-        batch_df.show(truncate=False)
-        try:
-            # Preprocessing dei dati nel batch
-            batch_df = pipeline.fit(batch_df).transform(batch_df)
-            batch_df = assembler.transform(batch_df)
+# def train_and_predict(batch_df, batch_id):
+#     if not batch_df.isEmpty():
+#         logger.info("Processing batch id: %d", batch_id)
+#         logger.info("Batch data schema:")
+#         batch_df.printSchema()
+#         logger.info("Batch data preview:")
+#         batch_df.show(truncate=False)
+#         try:
+#             # Preprocessing dei dati nel batch
+#             batch_df = pipeline.fit(batch_df).transform(batch_df)
+#             batch_df = assembler.transform(batch_df)
             
-            # Suddivisione dei dati in training e test
-            (trainingData, testData) = batch_df.randomSplit([0.8, 0.2])
+#             # Suddivisione dei dati in training e test
+#             (trainingData, testData) = batch_df.randomSplit([0.8, 0.2])
 
-            # Addestramento del modello
-            model = lr.fit(trainingData)
+#             # Addestramento del modello
+#             model = lr.fit(trainingData)
 
-            # Predizione e valutazione
-            predictions = model.transform(testData)
-            evaluator = RegressionEvaluator(labelCol="aqius", predictionCol="prediction", metricName="rmse")
-            rmse = evaluator.evaluate(predictions)
-            logger.info(f"Root Mean Squared Error (RMSE) on test data = {rmse}")
-            # Esegui previsioni sui dati in streaming
-            streaming_predictions = model.transform(batch_df)
+#             # Predizione e valutazione
+#             predictions = model.transform(testData)
+#             evaluator = RegressionEvaluator(labelCol="aqius", predictionCol="prediction", metricName="rmse")
+#             rmse = evaluator.evaluate(predictions)
+#             logger.info(f"Root Mean Squared Error (RMSE) on test data = {rmse}")
+#             # Esegui previsioni sui dati in streaming
+#             streaming_predictions = model.transform(batch_df)
             
-            # Preparazione dei dati per Elasticsearch
-            output = streaming_predictions.select(
-                col("weather_timestamp").alias("timestamp"),
-                col("prediction").alias("predicted_aqius"),
-                *feature_columns,
-                "weather_timestamp",
-                "state",
-                "city",
-                "gps_lat",
-                "country",
-                "mainus",
-                "aqicn",
-                "icon",
-                "gps_lon",
-                "maincn",
-                "pollution_timestamp",
-                "aqius",
-            )
+#             # Preparazione dei dati per Elasticsearch
+#             output = streaming_predictions.select(
+#                 col("weather_timestamp").alias("timestamp"),
+#                 col("prediction").alias("predicted_aqius"),
+#                 *feature_columns,
+#                 "weather_timestamp",
+#                 "state",
+#                 "city",
+#                 "gps_lat",
+#                 "country",
+#                 "mainus",
+#                 "aqicn",
+#                 "icon",
+#                 "gps_lon",
+#                 "maincn",
+#                 "pollution_timestamp",
+#                 "aqius",
+#             )
             
-            # Log dei dati prima di scriverli su Elasticsearch
-            print("Data before writing to Elasticsearch:")
-            output.show(truncate=False)
+#             # Log dei dati prima di scriverli su Elasticsearch
+#             print("Data before writing to Elasticsearch:")
+#             output.show(truncate=False)
 
-            # Controlla lo schema del DataFrame output
-            output.printSchema()
+#             # Controlla lo schema del DataFrame output
+#             output.printSchema()
 
-            # Scrittura dei dati su Elasticsearch
-            output.write \
-                .format("org.elasticsearch.spark.sql") \
-                .option("es.resource", f"{elastic_index}") \
-                .option("es.nodes", es_host) \
-                .option("es.nodes.wan.only", "true") \
-                .mode("append") \
-                .save()
-        except Exception as e:
-            print("An error occurred:", str(e))
-            logger.error("An error occurred during batch processing: %s", e)
-    else:
-        logger.info("No data received in batch id: %d", batch_id)
+#             # Scrittura dei dati su Elasticsearch
+#             output.write \
+#                 .format("org.elasticsearch.spark.sql") \
+#                 .option("es.resource", f"{elastic_index}") \
+#                 .option("es.nodes", es_host) \
+#                 .option("es.nodes.wan.only", "true") \
+#                 .mode("append") \
+#                 .save()
+#                 # .awaitTermination()
+            
+#         except Exception as e:
+#             logger.error("An error occurred during batch processing: %s", e)
+#     else:
+#         logger.info("No data received in batch id: %d", batch_id)
 
 # Esecuzione del modello di machine learning sui dati in streaming
-query = df.writeStream \
-    .foreachBatch(train_and_predict) \
-    .outputMode("append") \
-    .start()
+# query = df.writeStream \
+#     .foreachBatch(train_and_predict) \
+#     .outputMode("append") \
+#     .start()
 
-query.awaitTermination()
+# query.awaitTermination()
