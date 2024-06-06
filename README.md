@@ -96,6 +96,7 @@ docker run -it --rm --hostname="ingestion_manager" --network aqm -e DATA_ACTION=
 ```
 
 
-## Spark
+## Elastic
+See all indices: http://localhost:9200/_cat/indices?v
 
 ---
