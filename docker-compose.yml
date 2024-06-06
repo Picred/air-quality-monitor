@@ -102,7 +102,7 @@ services:
       interval: 15s
       timeout: 15s
       retries: 5
-      start_period: 20s
+      start_period: 40s
     networks:
       aqm:
     ports:
