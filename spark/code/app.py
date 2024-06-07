@@ -31,7 +31,6 @@ schema = StructType([
     StructField("city", StringType(), True),
     StructField("gps_lat", DoubleType(), True),
     StructField("wind_speed", DoubleType(), True),
-    StructField("tags", StringType(), True),
     StructField("country", StringType(), True),
     StructField("temperature", DoubleType(), True),
     StructField("mainus", StringType(), True),
@@ -43,6 +42,7 @@ schema = StructType([
     StructField("pollution_timestamp", StringType(), True),
     StructField("aqius", IntegerType(), True),
     StructField("humidity", IntegerType(), True),
+    StructField("@timestamp", StringType(), True)
 ])
 
 
@@ -57,11 +57,11 @@ df = spark \
     .load()
 
 # Conversione dei dati da formato Kafka
-# df = df.selectExpr("CAST(value AS STRING) as json").select(from_json(col("json"), schema).alias("data")).select("data.*")
-df = df.selectExpr("CAST(value AS STRING)") \
-    .select(from_json("value", schema).alias("data")) \
+df = df.selectExpr("CAST(value AS STRING) as json").select(from_json(col("json"), schema).alias("data")).select("data.*")
+# df = df.selectExpr("CAST(value AS STRING)") \
+#     .select(from_json("value", schema).alias("data")) \
 
-df = df.select("data")
+# df = df.select("data.*")
 
 df.writeStream \
     .format("org.elasticsearch.spark.sql") \
