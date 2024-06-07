@@ -4,3 +4,4 @@ kafka/setup/kafka*
 spark/setup/spark*
 spark/dataset
 **/__pycache__/
+spark/code/data.csv

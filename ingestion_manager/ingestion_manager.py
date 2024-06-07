@@ -2,9 +2,6 @@ import asyncio
 import json
 import sys
 import time
-import socket
-from pylogbeat import PyLogBeatClient #type: ignore
-from utils.extract_data import extract_data
 from utils.retrieve_data import (
     get_states_by_country,
     get_cities_by_state_country,
@@ -13,51 +10,11 @@ from utils.retrieve_data import (
     check_api_key
 )
 from utils.setup import logger, config, LOGSTASH_HOSTNAME, LOGSTASH_PORT
+from utils.logstash_handler import LogstashHandler
+from utils.train_data import CSVHandler
 
 
-class LogstashHandler:
-    """
-    A class for handling communication with Logstash.
-    Args:
-        host (str): The hostname or IP address of the Logstash server.
-        port (int): The port number on which Logstash is running.
-    """
-
-    def __init__(self, host: str, port: int):
-        self.host = host
-        self.port = port
-
-    def test_logstash(self):
-        """
-        Checks if Logstash is ready for receiving data.
-        """
-        while True:
-            try:
-                with socket.create_connection((self.host, self.port)):
-                    logger.info("Logstash is ready!")
-                    break
-            except socket.error:
-                logger.warning("Logstash not ready, waiting... [CTRL+C to stop]")
-                time.sleep(5)
-
-    def send_to_logstash(self, data: dict):
-        """
-        Sends data to Logstash for ingestion.
-
-        Args:
-            data (dict): The data to be sent to Logstash.
-        """
-        if isinstance(data.get("data"), list):
-            logger.info("Data to be sent: %s", data)
-            return
-
-        data = extract_data(data)
-        client = PyLogBeatClient(self.host, self.port)
-        client.send([json.dumps(data)])
-        logger.info("Sent to Logstash! 🚀")
-
-
-async def retrieve_and_send_data(logstash_handler: LogstashHandler):
+async def retrieve_and_send_data(logstash_handler: LogstashHandler, csv_handler: CSVHandler):
     """
     Retrieves and sends air quality data to Logstash.
 
@@ -98,7 +55,11 @@ async def retrieve_and_send_data(logstash_handler: LogstashHandler):
             {config['COUNTRY_NAME']}&key={config['API_KEY']}"
         response = make_request(url)
 
-        logstash_handler.send_to_logstash(response)
+        if csv_handler:
+            csv_handler.write_to_csv(response)
+        else:
+            logstash_handler.send_to_logstash(response)
+        
         time.sleep(10)
 
 
@@ -126,6 +87,8 @@ async def main():
     """
     The main asynchronous function for executing the script.
     """
+    csv_handler = CSVHandler("./data/historical_data.csv")
+
     logstash_handler = LogstashHandler(LOGSTASH_HOSTNAME, LOGSTASH_PORT)
     logstash_handler.test_logstash()
 
@@ -133,7 +96,8 @@ async def main():
     if data_action == "DEMO":
         await demo(logstash_handler)
     elif data_action == "NODEMO":
-        await retrieve_and_send_data(logstash_handler)
+        # await retrieve_and_send_data(logstash_handler=logstash_handler, csv_handler=None) # Comment to get data for training
+        await retrieve_and_send_data(logstash_handler=None, csv_handler=csv_handler) # Uncomment to train data
     else:
         logstash_handler.send_to_logstash(get_data())
 
