@@ -99,4 +99,34 @@ docker run -it --rm --hostname="ingestion_manager" --network aqm -e DATA_ACTION=
 ## Elastic
 See all indices: http://localhost:9200/_cat/indices?v
 
+
 ---
+Sure, here is the updated section "Getting new training data" in English, with the additional points included:
+
+---
+
+# Getting new training data 
+
+### Data Collection
+
+1. **Start the Crontab (Linux)**: Add the following line to your crontab: `0 * * * * /full/path/air-quality-monitor/train.sh >> /full/path/air-quality-monitor/cron.log 2>&1`. This will schedule data collection every hour. The command can be customized, follow the [guide](https://man7.org/linux/man-pages/man5/crontab.5.html).
+    - You can open *crontab* editor with `crontab -e`
+    - If you are not using linux you can just start the script manually with `bash /full/path/air-quality-monitor/train.sh >> /full/path/air-quality-monitor/cron.log 2>&1`
+
+2. **Uncomment the `historical_data` service** in the `docker-compose.yml` file.
+
+3. **Build its image** with `docker compose build historical_data`.
+
+4. **Wait for the scheduled time** for data collection to begin.
+
+5. Check log on `cron.log`
+    - **Note**: Ensure the Docker process has the correct permissions on the `./ingestion_manager/data` folder so it can insert new elements.
+
+6. **Model Evaluation**: After training, evaluate the model's performance to ensure it has improved with the addition of the new data.
+
+### Stopping new data collection
+- **Remove the Crontab Entry**: Remove the written line from your crontab 
+- **Comment out the historical_data** service in the docker-compose.yml file.
+
+### Update your model
+TODO
