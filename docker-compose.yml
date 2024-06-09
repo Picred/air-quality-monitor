@@ -79,7 +79,9 @@ services:
     restart: always
     volumes:
       - ./spark/code/app.py:/opt/aqm/app.py
-      - ./ingestion_manager/demo_data.json:/opt/spark/work-dir/demo_data.json
+      # - ./ingestion_manager/demo_data.json:/opt/spark/work-dir/demo_data.json
+      - ./ingestion_manager/data/historical_data.csv:/opt/spark/work-dir/data.csv
+      - ./spark/model:/opt/spark/work-dir/model
     command: > 
       /opt/spark/bin/spark-submit --conf spark.driver.extraJavaOptions="-Divy.cache.dir=/tmp -Divy.home=/tmp" --packages org.apache.spark:spark-sql-kafka-0-10_2.12:3.5.1,org.elasticsearch:elasticsearch-spark-30_2.12:8.13.4  /opt/aqm/app.py
     networks:
@@ -119,3 +121,15 @@ services:
       - ./kibana/kibana.yml:/usr/share/kibana/config/kibana.yml
     networks:
       aqm:
+  
+# Uncomment to train the model
+  # train_model:
+  #   build:
+  #     context: spark/
+  #     dockerfile: Dockerfile
+  #   volumes:
+  #     - ./spark/code/train_model.py:/opt/aqm/train_model.py
+  #     - ./ingestion_manager/data/historical_data.csv:/opt/spark/work-dir/data.csv
+  #     - ./spark/model:/opt/spark/work-dir/model
+  #   command: > 
+  #     /opt/spark/bin/spark-submit --conf spark.driver.extraJavaOptions="-Divy.cache.dir=/tmp -Divy.home=/tmp" --packages org.apache.spark:spark-sql-kafka-0-10_2.12:3.5.1 /opt/aqm/train_model.py

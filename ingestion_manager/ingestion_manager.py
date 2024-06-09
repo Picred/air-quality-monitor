@@ -59,7 +59,7 @@ async def retrieve_and_send_data(logstash_handler: LogstashHandler, csv_handler:
             csv_handler.write_to_csv(response)
         else:
             logstash_handler.send_to_logstash(response)
-        
+
         time.sleep(10)
 
 
@@ -87,12 +87,12 @@ async def main():
     """
     The main asynchronous function for executing the script.
     """
-    csv_handler = CSVHandler("./data/historical_data.csv")
+    csv_handler = CSVHandler("/ingestion_manager/data/historical_data.csv")
 
     logstash_handler = LogstashHandler(LOGSTASH_HOSTNAME, LOGSTASH_PORT)
-    logstash_handler.test_logstash()
+    # logstash_handler.test_logstash() # Comment to get data for training
 
-    data_action = config.get('DATA_ACTION', 'NODEMO')
+    data_action = config['DATA_ACTION']
     if data_action == "DEMO":
         await demo(logstash_handler)
     elif data_action == "NODEMO":

@@ -17,7 +17,7 @@ config = {
     "GPS_LON": float(os.getenv("GPS_LON", "15.090278")),
     "CITY_TO_SCAN": os.getenv("CITY_TO_SCAN", "Catania"),
     "STATE_NAME": os.getenv("STATE_NAME", "Sicily"),
-    "DATA_ACTION": os.getenv("DATA_ACTION", "DEMO"),
+    "DATA_ACTION": os.getenv("DATA_ACTION", "NODEMO"),
 }
 
 # URLs
