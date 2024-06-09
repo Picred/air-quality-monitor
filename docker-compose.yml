@@ -127,6 +127,8 @@ services:
   #   build:
   #     context: spark/
   #     dockerfile: Dockerfile
+  #   environment:
+  #     - DATA_ACTION=TRAIN_MODEL
   #   volumes:
   #     - ./spark/code/train_model.py:/opt/aqm/train_model.py
   #     - ./ingestion_manager/data/historical_data.csv:/opt/spark/work-dir/data.csv

@@ -1,6 +1,6 @@
 import csv
+import os
 from .setup import logger
-from .extract_data import extract_data
 
 class CSVHandler:
     """
@@ -11,8 +11,7 @@ class CSVHandler:
 
     def __init__(self, file_path: str):
         self.file_path = file_path
-        self.fieldnames = ['city', 'state', 'country', 'gps_lat', 'gps_lon', 'pollution_timestamp', 'aqius', 'mainus', 'aqicn', 'maincn', 'weather_timestamp', 'temperature', 'pression', 'humidity', 'wind_speed', 'wind_direction', 'icon']
-
+        self.fieldnames = ['aqi', 'city', 'co', 'lat', 'lon', 'nh3', 'no', 'no2', 'pm10', 'pm2_5', 'so2', 'timestamp_utc'] 
 
     def write_to_csv(self, data):
         """
@@ -21,14 +20,16 @@ class CSVHandler:
         Args:
             data (dict): The data to be written to the CSV file.
         """
-        if isinstance(data.get("data"), list):
-            logger.info("Data to be written: %s", data)
-            return
+        logger.info("Data to write: %s", data)
 
-        extracted_data = extract_data(data)
-
-        logger.info("Data to write: %s", extracted_data)
+        file_exists = os.path.isfile(self.file_path)
+        write_header = not file_exists or os.stat(self.file_path).st_size == 0
 
         with open(self.file_path, 'a', newline='') as csvfile:
             writer = csv.DictWriter(csvfile, fieldnames=self.fieldnames)
-            writer.writerow(extracted_data)
+            
+            if write_header:
+                writer.writeheader()
+
+            writer.writerow(data)
+            logger.info("Data written to CSV file.")

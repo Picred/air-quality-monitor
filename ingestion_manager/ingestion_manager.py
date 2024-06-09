@@ -37,28 +37,32 @@ async def retrieve_and_send_data(logstash_handler: LogstashHandler, csv_handler:
 
         response = make_request(url)
         response = extract_data(response, city)
-        time.sleep(5)
+        time.sleep(10)
 
-    # if csv_handler:
-    #     csv_handler.write_to_csv(response)
-    # else:
-        logstash_handler.send_to_logstash(response)
-
+        if csv_handler:
+            csv_handler.write_to_csv(response)
+        else:
+            logstash_handler.send_to_logstash(response)
+        
+        break
 
 async def main():
     """
     The main asynchronous function for executing the script.
     """
-    csv_handler = CSVHandler("/ingestion_manager/data/historical_data.csv")
-
-    logstash_handler = LogstashHandler(config['LOGSTASH_HOSTNAME'], config['LOGSTASH_PORT'])
-    logstash_handler.test_logstash() # Comment to get data for training
-
-    data_action = config['DATA_ACTION']
-    if data_action == "NODEMO":
-        await retrieve_and_send_data(logstash_handler=logstash_handler, csv_handler=None) # Comment to get data for training
-        # await retrieve_and_send_data(logstash_handler=None, csv_handler=csv_handler) # Uncomment to train data
-
+    match config['DATA_ACTION']:
+        case "NODEMO":
+            logstash_handler = LogstashHandler(config['LOGSTASH_HOSTNAME'], config['LOGSTASH_PORT'])
+            logstash_handler.test_logstash()
+            await retrieve_and_send_data(logstash_handler=logstash_handler, csv_handler=None)
+            pass
+        case "TRAIN_MODEL":
+            csv_handler = CSVHandler("/ingestion_manager/data/historical_data.csv")
+            await retrieve_and_send_data(logstash_handler=None, csv_handler=csv_handler)          
+            pass
+        case _:
+            logger.error("Invalid data action. Exiting...")
+            sys.exit(1)
 
 if __name__ == '__main__':
     if not check_api_key():
