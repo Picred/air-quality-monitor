@@ -33,7 +33,8 @@ schema = StructType([
     StructField("pm10", FloatType(), True),
     StructField("pm2_5", FloatType(), True),
     StructField("so2", FloatType(), True),
-    StructField("timestamp_utc", StringType(), True)
+    StructField("timestamp_utc", StringType(), True),
+    StructField("@timestamp", StringType(), True)
 ])
 
 df = spark \
@@ -50,12 +51,12 @@ model = PipelineModel.load("model")
 
 predictions = model.transform(df).withColumnRenamed("prediction", "predicted_aqi")
 
-selected_columns = ["city", "aqi", "predicted_aqi"]
+selected_columns = ["city", "aqi", "predicted_aqi", "timestamp_utc", "@timestamp", "lat", "lon", "co", "nh3", "no", "no2", "pm10", "pm2_5", "so2"]
 
 selected_predictions = predictions.select(selected_columns)
 
-selected_predictions = selected_predictions.withColumn("aqi", col("aqi").cast("string"))
-selected_predictions = selected_predictions.withColumn("prediction", col("predicted_aqi").cast("string"))
+selected_predictions = selected_predictions.withColumn("aqi", col("aqi").cast("integer"))
+selected_predictions = selected_predictions.withColumn("city", col("city").cast("string"))
 
 selected_predictions.writeStream \
     .format("org.elasticsearch.spark.sql") \

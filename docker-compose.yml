@@ -94,7 +94,7 @@ services:
     environment:
       - discovery.type=single-node
       - xpack.security.enabled=false
-    mem_limit: 2 GB
+    mem_limit: 1 GB
     hostname: elasticsearch
     container_name: elasticsearch
     healthcheck:
