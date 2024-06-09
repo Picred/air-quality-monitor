@@ -3,8 +3,6 @@ import json
 import sys
 import time
 from utils.retrieve_data import (
-    get_states_by_country,
-    get_cities_by_state_country,
     make_request,
     get_data,
     check_api_key
@@ -12,6 +10,7 @@ from utils.retrieve_data import (
 from utils.setup import logger, config, LOGSTASH_HOSTNAME, LOGSTASH_PORT
 from utils.logstash_handler import LogstashHandler
 from utils.train_data import CSVHandler
+from geopy.geocoders import Nominatim
 
 
 async def retrieve_and_send_data(logstash_handler: LogstashHandler, csv_handler: CSVHandler):
@@ -26,41 +25,39 @@ async def retrieve_and_send_data(logstash_handler: LogstashHandler, csv_handler:
     logger.info("Selected country: %s", config['COUNTRY_NAME'])
     logger.info("Retrieving data of major cities...")
 
-    states = get_states_by_country(config['COUNTRY_NAME'])
-    states_list = [elem['state'] for elem in states]
 
-    time.sleep(1)
+    cities_list = config['cities']
+    # time.sleep(10)
 
-    for state in states_list:
-        state = state.replace(" ", "+")
-        logger.info("State retrieved: %s", state)
-        cities = get_cities_by_state_country(state, config['COUNTRY_NAME'])
+    # per ogni città prendo le coordinate
+    
+    def get_coord(city):
+        geolocator = Nominatim(user_agent="geoapiExercises")
 
-        if not cities:
-            continue
+        location = geolocator.geocode(city)
 
-        cities_list = [elem['city'] for elem in cities if 'city' in elem]
-        if not cities_list:
-            logger.warning("No cities found for this state. Maybe too many requests.\
-                            Waiting 10 sec. [CTRL+C to stop]")
-            time.sleep(10)
-            continue
+        if location:
+            return {'latitude': location.latitude, 'longitude': location.longitude}
+        else:
+            return {'error': 'Location not found'}
 
-        logger.info("Retrieved cities %s", cities_list)
-        time.sleep(10)
+# Esempio di utilizzo
 
-        city = cities_list[0].replace(" ", "+")
+    for city in cities_list:
         logger.info("City selected: %s", city)
-        url = f"http://api.airvisual.com/v2/city?city={city}&state={state}&country=\
-            {config['COUNTRY_NAME']}&key={config['API_KEY']}"
+    
+        coordinates = get_coord(city)
+        # print(coordinates)
+        url = f"http://api.openweathermap.org/data/2.5/air_pollution?lat={coordinates.get('lat')}&lon={coordinates.get('lat')}&appid={config['API_KEY']}"
         response = make_request(url)
 
-        if csv_handler:
-            csv_handler.write_to_csv(response)
-        else:
-            logstash_handler.send_to_logstash(response)
+        print(f"City: {city} \n Response: {response}")
+    if csv_handler:
+        csv_handler.write_to_csv(response)
+    else:
+        logstash_handler.send_to_logstash(response)
 
-        time.sleep(10)
+    time.sleep(10)
 
 
 def get_demo_data() -> dict:
@@ -96,8 +93,8 @@ async def main():
     if data_action == "DEMO":
         await demo(logstash_handler)
     elif data_action == "NODEMO":
-        # await retrieve_and_send_data(logstash_handler=logstash_handler, csv_handler=None) # Comment to get data for training
-        await retrieve_and_send_data(logstash_handler=None, csv_handler=csv_handler) # Uncomment to train data
+        await retrieve_and_send_data(logstash_handler=logstash_handler, csv_handler=None) # Comment to get data for training
+        # await retrieve_and_send_data(logstash_handler=None, csv_handler=csv_handler) # Uncomment to train data
     else:
         logstash_handler.send_to_logstash(get_data())
 

@@ -11,13 +11,14 @@ logger = logging.getLogger("ingestion_manager")
 
 # Configuration
 config = {
-    "API_KEY": os.getenv("API_KEY", "0e72cb61-87b6-4ab4-b422-0886e1305ac6"),
+    "API_KEY": os.getenv("API_KEY", "056928b3fb7012b32cfa961ddd30a609"),
     "COUNTRY_NAME": os.getenv("COUNTRY_NAME", "Italy"),
     "GPS_LAT": float(os.getenv("GPS_LAT", "37.500000")),
     "GPS_LON": float(os.getenv("GPS_LON", "15.090278")),
     "CITY_TO_SCAN": os.getenv("CITY_TO_SCAN", "Catania"),
     "STATE_NAME": os.getenv("STATE_NAME", "Sicily"),
     "DATA_ACTION": os.getenv("DATA_ACTION", "NODEMO"),
+    "cities" : ['Rome', 'Milan', 'Naples', 'Turin', 'Palermo', 'Genoa', 'Bologna', 'Florence', 'Bari', 'Catania']
 }
 
 # URLs

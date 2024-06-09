@@ -32,15 +32,7 @@ def make_request(url: str) -> dict:
         dict: The response data as a dictionary.
     """
     response = requests.get(url, timeout=15).json()
-    while not is_valid_response(response):
-        error = response.get("data", {}).get("message", "Unknown error")
-        if error == "state_not_found":
-            print(f"[ingestion_manager] Failed to fetch data. {error}")
-            return {}
-        print(f"[ingestion_manager] Failed to fetch data. {error}. Waiting 5 sec. [CTRL+C to stop]")
-        time.sleep(5)
-        response = requests.get(url, timeout=15).json()
-    return response.get("data", {})
+    return response
 
 
 def get_data() -> dict:
@@ -89,4 +81,17 @@ def get_cities_by_state_country(state_name: str, country_name: str) -> dict:
     """
     url = f"http://api.airvisual.com/v2/cities?state={state_name}&country=\
             {country_name}&key={config['API_KEY']}"
+    return make_request(url)
+
+def get_cities() -> dict:
+    """
+    Retrieves cities for a given state and country.
+    Args:
+        state_name (str): The name of the state.
+        country_name (str): The name of the country.
+    Returns:
+        dict: A dict of cities for the given state and country.
+    """
+    url = f"http://api.openweathermap.org/data/2.5/air_pollution?\
+        lat={37.500000}&lon=15.090278&appid=056928b3fb7012b32cfa961ddd30a609{config['API_KEY']}"
     return make_request(url)
