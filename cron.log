@@ -1,0 +1,204 @@
+Starting ingestion manager
+INFO:ingestion_manager:API_KEY is set 👌
+INFO:ingestion_manager:Logstash is ready!
+INFO:ingestion_manager:Starting data ingestion process...
+INFO:ingestion_manager:This is not a demo. Real data will be retrieved. It may take a while. 🕒
+INFO:ingestion_manager:Selected country: Italy
+INFO:ingestion_manager:Retrieving data of major cities...
+INFO:ingestion_manager:State retrieved: Abruzzo
+INFO:ingestion_manager:State retrieved: Aosta+Valley
+INFO:ingestion_manager:Retrieved cities ['Aosta', 'Charvensod']
+INFO:ingestion_manager:City selected: Aosta
+INFO:ingestion_manager:Data to write: {'city': 'Aosta', 'state': 'Aosta Valley', 'country': 'Italy', 'gps_lat': 7.329645000000001, 'gps_lon': 45.73430599999998, 'pollution_timestamp': '2024-06-09T06:00:00.000Z', 'aqius': 73, 'mainus': 'p2', 'aqicn': 49, 'maincn': 'p1', 'weather_timestamp': '2024-06-09T08:00:00.000Z', 'temperature': 18, 'pression': 985, 'humidity': 78, 'wind_speed': 2.06, 'wind_direction': 210, 'icon': '10d'}
+INFO:ingestion_manager:State retrieved: Apulia
+INFO:ingestion_manager:Retrieved cities ['Brindisi', 'Ceglie Messapica', 'Terlizzi', 'Torchiarolo']
+INFO:ingestion_manager:City selected: Brindisi
+INFO:ingestion_manager:Data to write: {'city': 'Brindisi', 'state': 'Apulia', 'country': 'Italy', 'gps_lat': 17.93833, 'gps_lon': 40.63806, 'pollution_timestamp': '2024-06-09T05:00:00.000Z', 'aqius': 53, 'mainus': 'p2', 'aqicn': 14, 'maincn': 'p2', 'weather_timestamp': '2024-06-09T08:00:00.000Z', 'temperature': 26, 'pression': 1011, 'humidity': 50, 'wind_speed': 3.09, 'wind_direction': 120, 'icon': '01d'}
+INFO:ingestion_manager:State retrieved: Basilicate
+INFO:ingestion_manager:State retrieved: Calabria
+INFO:ingestion_manager:Retrieved cities ['Cittanova', 'Locri', 'Polistena']
+INFO:ingestion_manager:City selected: Cittanova
+INFO:ingestion_manager:Data to write: {'city': 'Cittanova', 'state': 'Calabria', 'country': 'Italy', 'gps_lat': 16.07898, 'gps_lon': 38.35431, 'pollution_timestamp': '2024-06-09T07:00:00.000Z', 'aqius': 56, 'mainus': 'p2', 'aqicn': 17, 'maincn': 'p2', 'weather_timestamp': '2024-06-09T08:00:00.000Z', 'temperature': 27, 'pression': 1012, 'humidity': 29, 'wind_speed': 1.35, 'wind_direction': 136, 'icon': '01d'}
+INFO:ingestion_manager:State retrieved: Campania
+INFO:ingestion_manager:Retrieved cities ['Naples', 'Pignataro Maggiore', 'Volla']
+INFO:ingestion_manager:City selected: Naples
+INFO:ingestion_manager:Data to write: {'city': 'Naples', 'state': 'Campania', 'country': 'Italy', 'gps_lat': 14.25451, 'gps_lon': 40.863690000000005, 'pollution_timestamp': '2024-06-09T08:00:00.000Z', 'aqius': 64, 'mainus': 'p2', 'aqicn': 23, 'maincn': 'p2', 'weather_timestamp': '2024-06-09T08:00:00.000Z', 'temperature': 24, 'pression': 1007, 'humidity': 75, 'wind_speed': 2.57, 'wind_direction': 90, 'icon': '04d'}
+INFO:ingestion_manager:State retrieved: Emilia-Romagna
+INFO:ingestion_manager:Retrieved cities ['Gossolengo', 'Modena', 'Piacenza', 'Ravenna']
+INFO:ingestion_manager:City selected: Gossolengo
+INFO:ingestion_manager:Data to write: {'city': 'Gossolengo', 'state': 'Emilia-Romagna', 'country': 'Italy', 'gps_lat': 9.61799, 'gps_lon': 45.00248, 'pollution_timestamp': '2024-06-09T08:00:00.000Z', 'aqius': 41, 'mainus': 'p2', 'aqicn': 11, 'maincn': 'p2', 'weather_timestamp': '2024-06-09T08:00:00.000Z', 'temperature': 24, 'pression': 1008, 'humidity': 60, 'wind_speed': 1.34, 'wind_direction': 47, 'icon': '04d'}
+INFO:ingestion_manager:State retrieved: Friuli+Venezia+Giulia
+INFO:ingestion_manager:Retrieved cities ['Doberdo del Lago', 'Domio', 'Morsano', 'Muggia', 'Ronchi dei Legionari', 'San Giovanni al Natisone', 'Trieste', 'Udine']
+INFO:ingestion_manager:City selected: Doberdo+del+Lago
+INFO:ingestion_manager:Data to write: {'city': 'Doberdo del Lago', 'state': 'Friuli Venezia Giulia', 'country': 'Italy', 'gps_lat': 13.54306, 'gps_lon': 45.84298999999999, 'pollution_timestamp': '2024-06-09T05:00:00.000Z', 'aqius': 44, 'mainus': 'p2', 'aqicn': 18, 'maincn': 'o3', 'weather_timestamp': '2024-06-09T08:00:00.000Z', 'temperature': 25, 'pression': 1008, 'humidity': 66, 'wind_speed': 2.06, 'wind_direction': 140, 'icon': '02d'}
+INFO:ingestion_manager:State retrieved: Latium
+INFO:ingestion_manager:Retrieved cities ['Civitavecchia', 'Monterotondo', 'Rome', 'Terracina']
+INFO:ingestion_manager:City selected: Civitavecchia
+INFO:ingestion_manager:Data to write: {'city': 'Civitavecchia', 'state': 'Latium', 'country': 'Italy', 'gps_lat': 11.79674, 'gps_lon': 42.09325, 'pollution_timestamp': '2024-06-09T08:00:00.000Z', 'aqius': 34, 'mainus': 'o3', 'aqicn': 26, 'maincn': 'o3', 'weather_timestamp': '2024-06-09T08:00:00.000Z', 'temperature': 25, 'pression': 1009, 'humidity': 74, 'wind_speed': 8.21, 'wind_direction': 130, 'icon': '04d'}
+INFO:ingestion_manager:State retrieved: Liguria
+INFO:ingestion_manager:Retrieved cities ['Chiavari', 'La Spezia']
+INFO:ingestion_manager:City selected: Chiavari
+INFO:ingestion_manager:Data to write: {'city': 'Chiavari', 'state': 'Liguria', 'country': 'Italy', 'gps_lat': 9.32241, 'gps_lon': 44.31771, 'pollution_timestamp': '2024-06-09T08:00:00.000Z', 'aqius': 36, 'mainus': 'p2', 'aqicn': 9, 'maincn': 'p2', 'weather_timestamp': '2024-06-09T08:00:00.000Z', 'temperature': 24, 'pression': 1009, 'humidity': 74, 'wind_speed': 0.45, 'wind_direction': 340, 'icon': '04d'}
+INFO:ingestion_manager:State retrieved: Lombardy
+INFO:ingestion_manager:Retrieved cities ['Assago', 'Bergamo', 'Besate', 'Brescia', 'Cittiglio', 'Corsico', 'Esine', 'Gaggiano', 'Livigno', 'Magenta', 'Milano', 'Nerviano', 'Olgiate Olona', 'Pavia', 'Revere', 'Rho', 'Santa Cristina', 'Settimo Milanese', 'Sumirago', 'Villa Carcina', 'Vimodrone', 'Vittuone']
+INFO:ingestion_manager:City selected: Assago
+INFO:ingestion_manager:Data to write: {'city': 'Assago', 'state': 'Lombardy', 'country': 'Italy', 'gps_lat': 9.12565, 'gps_lon': 45.40887, 'pollution_timestamp': '2024-06-09T08:00:00.000Z', 'aqius': 64, 'mainus': 'p2', 'aqicn': 23, 'maincn': 'p2', 'weather_timestamp': '2024-06-09T08:00:00.000Z', 'temperature': 23, 'pression': 1008, 'humidity': 71, 'wind_speed': 0.89, 'wind_direction': 252, 'icon': '03d'}
+INFO:ingestion_manager:State retrieved: Molise
+INFO:ingestion_manager:State retrieved: Piedmont
+INFO:ingestion_manager:Retrieved cities ['Belvedere Langhe', 'Cerrina', 'Cesana Torinese', 'Piatto', 'Pino Torinese']
+INFO:ingestion_manager:City selected: Belvedere+Langhe
+INFO:ingestion_manager:Data to write: {'city': 'Belvedere Langhe', 'state': 'Piedmont', 'country': 'Italy', 'gps_lat': 7.97387, 'gps_lon': 44.49361, 'pollution_timestamp': '2024-06-09T08:00:00.000Z', 'aqius': 27, 'mainus': 'p2', 'aqicn': 7, 'maincn': 'p2', 'weather_timestamp': '2024-06-09T07:00:00.000Z', 'temperature': 19, 'pression': 1008, 'humidity': 67, 'wind_speed': 1.37, 'wind_direction': 114, 'icon': '04d'}
+INFO:ingestion_manager:State retrieved: Sardinia
+INFO:ingestion_manager:Retrieved cities ['Assemini', 'Cagliari', 'Macomer', 'Monserrato', 'Portoscuso', 'Santa Giusta', 'Sarroch', 'Siniscola']
+INFO:ingestion_manager:City selected: Assemini
+INFO:ingestion_manager:Data to write: {'city': 'Assemini', 'state': 'Sardinia', 'country': 'Italy', 'gps_lat': 8.99879, 'gps_lon': 39.29123, 'pollution_timestamp': '2024-06-09T00:00:00.000Z', 'aqius': 22, 'mainus': 'p2', 'aqicn': 9, 'maincn': 's2', 'weather_timestamp': '2024-06-09T08:00:00.000Z', 'temperature': 25, 'pression': 1007, 'humidity': 66, 'wind_speed': 1.54, 'wind_direction': 170, 'icon': '01d'}
+INFO:ingestion_manager:State retrieved: Sicily
+INFO:ingestion_manager:Retrieved cities ['Marinella']
+INFO:ingestion_manager:City selected: Marinella
+INFO:ingestion_manager:Data to write: {'city': 'Marinella', 'state': 'Sicily', 'country': 'Italy', 'gps_lat': 12.84434, 'gps_lon': 37.59475, 'pollution_timestamp': '2024-06-09T08:00:00.000Z', 'aqius': 36, 'mainus': 'p2', 'aqicn': 9, 'maincn': 'p2', 'weather_timestamp': '2024-06-09T08:00:00.000Z', 'temperature': 28, 'pression': 1011, 'humidity': 43, 'wind_speed': 5.85, 'wind_direction': 163, 'icon': '04d'}
+INFO:ingestion_manager:State retrieved: The+Marches
+INFO:ingestion_manager:Retrieved cities ['Ancona', 'Arcevia', 'Chiaravalle', 'Civitanova Alta', 'Fabriano', 'Falconara Marittima', 'Jesi', 'Pesaro', 'Urbino']
+INFO:ingestion_manager:City selected: Ancona
+INFO:ingestion_manager:Data to write: {'city': 'Ancona', 'state': 'The Marches', 'country': 'Italy', 'gps_lat': 13.50337, 'gps_lon': 43.5942, 'pollution_timestamp': '2024-06-09T05:00:00.000Z', 'aqius': 79, 'mainus': 'p2', 'aqicn': 35, 'maincn': 'p2', 'weather_timestamp': '2024-06-09T08:00:00.000Z', 'temperature': 24, 'pression': 1011, 'humidity': 69, 'wind_speed': 1.03, 'wind_direction': 0, 'icon': '10d'}
+INFO:ingestion_manager:State retrieved: Trentino-Alto+Adige
+INFO:ingestion_manager:Retrieved cities ['Avio', 'Bolzano-Bozen', 'Borgo', 'Bressanone', 'Brunico', 'Cortina sulla Strada del Vino', 'Laces', 'Laives', 'Meano', 'Mezzolombardo', 'Ora', 'Renon - Ritten', 'Riva del Garda', 'Rovereto', 'Trento', 'Vezzano']
+INFO:ingestion_manager:City selected: Avio
+INFO:ingestion_manager:Data to write: {'city': 'Avio', 'state': 'Trentino-Alto Adige', 'country': 'Italy', 'gps_lat': 10.93938, 'gps_lon': 45.73396, 'pollution_timestamp': '2024-06-09T08:00:00.000Z', 'aqius': 59, 'mainus': 'p2', 'aqicn': 26, 'maincn': 'p1', 'weather_timestamp': '2024-06-09T08:00:00.000Z', 'temperature': 24, 'pression': 1006, 'humidity': 64, 'wind_speed': 1.01, 'wind_direction': 181, 'icon': '04d'}
+INFO:ingestion_manager:State retrieved: Tuscany
+INFO:ingestion_manager:Retrieved cities ['Florence']
+INFO:ingestion_manager:City selected: Florence
+INFO:ingestion_manager:Data to write: {'city': 'Florence', 'state': 'Tuscany', 'country': 'Italy', 'gps_lat': 11.27222, 'gps_lon': 43.77306, 'pollution_timestamp': '2024-06-09T08:00:00.000Z', 'aqius': 49, 'mainus': 'p2', 'aqicn': 13, 'maincn': 'p2', 'weather_timestamp': '2024-06-09T08:00:00.000Z', 'temperature': 25, 'pression': 1008, 'humidity': 63, 'wind_speed': 1.34, 'wind_direction': 179, 'icon': '01d'}
+INFO:ingestion_manager:State retrieved: Umbria
+INFO:ingestion_manager:State retrieved: Veneto
+INFO:ingestion_manager:Retrieved cities ['Conegliano', 'Fontanafredda', 'Mansue', 'Mestre', 'Mogliano Veneto', 'Monselice', 'Noale', 'Padova', 'Pederobba', 'Ronca', 'Treviso', 'Venice', 'Verona', 'Vicenza']
+INFO:ingestion_manager:City selected: Conegliano
+INFO:ingestion_manager:Data to write: {'city': 'Conegliano', 'state': 'Veneto', 'country': 'Italy', 'gps_lat': 12.308056, 'gps_lon': 45.89055599999999, 'pollution_timestamp': '2024-06-09T05:00:00.000Z', 'aqius': 79, 'mainus': 'p2', 'aqicn': 48, 'maincn': 'p1', 'weather_timestamp': '2024-06-09T08:00:00.000Z', 'temperature': 24, 'pression': 1009, 'humidity': 74, 'wind_speed': 2.59, 'wind_direction': 77, 'icon': '04d'}
+[ingestion_manager] Failed to fetch data. state_not_found
+[ingestion_manager] Failed to fetch data. Too Many Requests. Waiting 5 sec. [CTRL+C to stop]
+[ingestion_manager] Failed to fetch data. Too Many Requests. Waiting 5 sec. [CTRL+C to stop]
+[ingestion_manager] Failed to fetch data. Too Many Requests. Waiting 5 sec. [CTRL+C to stop]
+[ingestion_manager] Failed to fetch data. Too Many Requests. Waiting 5 sec. [CTRL+C to stop]
+[ingestion_manager] Failed to fetch data. Too Many Requests. Waiting 5 sec. [CTRL+C to stop]
+[ingestion_manager] Failed to fetch data. state_not_found
+[ingestion_manager] Failed to fetch data. Too Many Requests. Waiting 5 sec. [CTRL+C to stop]
+[ingestion_manager] Failed to fetch data. Too Many Requests. Waiting 5 sec. [CTRL+C to stop]
+[ingestion_manager] Failed to fetch data. Too Many Requests. Waiting 5 sec. [CTRL+C to stop]
+[ingestion_manager] Failed to fetch data. Too Many Requests. Waiting 5 sec. [CTRL+C to stop]
+[ingestion_manager] Failed to fetch data. Too Many Requests. Waiting 5 sec. [CTRL+C to stop]
+[ingestion_manager] Failed to fetch data. Too Many Requests. Waiting 5 sec. [CTRL+C to stop]
+[ingestion_manager] Failed to fetch data. Too Many Requests. Waiting 5 sec. [CTRL+C to stop]
+[ingestion_manager] Failed to fetch data. Too Many Requests. Waiting 5 sec. [CTRL+C to stop]
+[ingestion_manager] Failed to fetch data. state_not_found
+[ingestion_manager] Failed to fetch data. Too Many Requests. Waiting 5 sec. [CTRL+C to stop]
+[ingestion_manager] Failed to fetch data. Too Many Requests. Waiting 5 sec. [CTRL+C to stop]
+[ingestion_manager] Failed to fetch data. Too Many Requests. Waiting 5 sec. [CTRL+C to stop]
+[ingestion_manager] Failed to fetch data. Too Many Requests. Waiting 5 sec. [CTRL+C to stop]
+[ingestion_manager] Failed to fetch data. Too Many Requests. Waiting 5 sec. [CTRL+C to stop]
+[ingestion_manager] Failed to fetch data. Too Many Requests. Waiting 5 sec. [CTRL+C to stop]
+[ingestion_manager] Failed to fetch data. state_not_found
+[ingestion_manager] Failed to fetch data. Too Many Requests. Waiting 5 sec. [CTRL+C to stop]
+[ingestion_manager] Failed to fetch data. Too Many Requests. Waiting 5 sec. [CTRL+C to stop]
+[ingestion_manager] Failed to fetch data. Too Many Requests. Waiting 5 sec. [CTRL+C to stop]
+[ingestion_manager] Failed to fetch data. Too Many Requests. Waiting 5 sec. [CTRL+C to stop]
+Starting ingestion manager
+INFO:ingestion_manager:API_KEY is set 👌
+INFO:ingestion_manager:Logstash is ready!
+INFO:ingestion_manager:Starting data ingestion process...
+INFO:ingestion_manager:This is not a demo. Real data will be retrieved. It may take a while. 🕒
+INFO:ingestion_manager:Selected country: Italy
+INFO:ingestion_manager:Retrieving data of major cities...
+INFO:ingestion_manager:State retrieved: Abruzzo
+INFO:ingestion_manager:State retrieved: Aosta+Valley
+INFO:ingestion_manager:Retrieved cities ['Aosta', 'Charvensod']
+INFO:ingestion_manager:City selected: Aosta
+INFO:ingestion_manager:Data to write: {'city': 'Aosta', 'state': 'Aosta Valley', 'country': 'Italy', 'gps_lat': 7.329645000000001, 'gps_lon': 45.73430599999998, 'pollution_timestamp': '2024-06-09T07:00:00.000Z', 'aqius': 73, 'mainus': 'p2', 'aqicn': 47, 'maincn': 'p1', 'weather_timestamp': '2024-06-09T09:00:00.000Z', 'temperature': 20, 'pression': 1007, 'humidity': 77, 'wind_speed': 1.03, 'wind_direction': 0, 'icon': '02d'}
+INFO:ingestion_manager:State retrieved: Apulia
+INFO:ingestion_manager:Retrieved cities ['Brindisi', 'Ceglie Messapica', 'Terlizzi', 'Torchiarolo']
+INFO:ingestion_manager:City selected: Brindisi
+INFO:ingestion_manager:Data to write: {'city': 'Brindisi', 'state': 'Apulia', 'country': 'Italy', 'gps_lat': 17.93833, 'gps_lon': 40.63806, 'pollution_timestamp': '2024-06-09T05:00:00.000Z', 'aqius': 53, 'mainus': 'p2', 'aqicn': 14, 'maincn': 'p2', 'weather_timestamp': '2024-06-09T09:00:00.000Z', 'temperature': 28, 'pression': 1011, 'humidity': 45, 'wind_speed': 3.6, 'wind_direction': 110, 'icon': '01d'}
+INFO:ingestion_manager:State retrieved: Basilicate
+INFO:ingestion_manager:State retrieved: Calabria
+INFO:ingestion_manager:Retrieved cities ['Cittanova', 'Locri', 'Polistena']
+INFO:ingestion_manager:City selected: Cittanova
+INFO:ingestion_manager:Data to write: {'city': 'Cittanova', 'state': 'Calabria', 'country': 'Italy', 'gps_lat': 16.07898, 'gps_lon': 38.35431, 'pollution_timestamp': '2024-06-09T08:00:00.000Z', 'aqius': 67, 'mainus': 'p2', 'aqicn': 26, 'maincn': 'p2', 'weather_timestamp': '2024-06-09T09:00:00.000Z', 'temperature': 28, 'pression': 1012, 'humidity': 27, 'wind_speed': 1.38, 'wind_direction': 137, 'icon': '01d'}
+INFO:ingestion_manager:State retrieved: Campania
+INFO:ingestion_manager:Retrieved cities ['Naples', 'Pignataro Maggiore', 'Volla']
+INFO:ingestion_manager:City selected: Naples
+INFO:ingestion_manager:Data to write: {'city': 'Naples', 'state': 'Campania', 'country': 'Italy', 'gps_lat': 14.25451, 'gps_lon': 40.863690000000005, 'pollution_timestamp': '2024-06-09T09:00:00.000Z', 'aqius': 56, 'mainus': 'p2', 'aqicn': 30, 'maincn': 'p1', 'weather_timestamp': '2024-06-09T09:00:00.000Z', 'temperature': 25, 'pression': 1007, 'humidity': 72, 'wind_speed': 3.6, 'wind_direction': 60, 'icon': '03d'}
+INFO:ingestion_manager:State retrieved: Emilia-Romagna
+INFO:ingestion_manager:Retrieved cities ['Gossolengo', 'Modena', 'Piacenza', 'Ravenna']
+INFO:ingestion_manager:City selected: Gossolengo
+INFO:ingestion_manager:Data to write: {'city': 'Gossolengo', 'state': 'Emilia-Romagna', 'country': 'Italy', 'gps_lat': 9.61799, 'gps_lon': 45.00248, 'pollution_timestamp': '2024-06-09T09:00:00.000Z', 'aqius': 43, 'mainus': 'p2', 'aqicn': 11, 'maincn': 'p2', 'weather_timestamp': '2024-06-09T09:00:00.000Z', 'temperature': 25, 'pression': 1008, 'humidity': 54, 'wind_speed': 1.33, 'wind_direction': 1, 'icon': '04d'}
+INFO:ingestion_manager:State retrieved: Friuli+Venezia+Giulia
+INFO:ingestion_manager:Retrieved cities ['Doberdo del Lago', 'Domio', 'Morsano', 'Muggia', 'Ronchi dei Legionari', 'San Giovanni al Natisone', 'Trieste', 'Udine']
+INFO:ingestion_manager:City selected: Doberdo+del+Lago
+INFO:ingestion_manager:Data to write: {'city': 'Doberdo del Lago', 'state': 'Friuli Venezia Giulia', 'country': 'Italy', 'gps_lat': 13.54306, 'gps_lon': 45.84298999999999, 'pollution_timestamp': '2024-06-09T07:00:00.000Z', 'aqius': 44, 'mainus': 'p2', 'aqicn': 20, 'maincn': 'o3', 'weather_timestamp': '2024-06-09T09:00:00.000Z', 'temperature': 26, 'pression': 1008, 'humidity': 61, 'wind_speed': 2.06, 'wind_direction': 170, 'icon': '02d'}
+INFO:ingestion_manager:State retrieved: Latium
+INFO:ingestion_manager:Retrieved cities ['Civitavecchia', 'Monterotondo', 'Rome', 'Terracina']
+INFO:ingestion_manager:City selected: Civitavecchia
+INFO:ingestion_manager:Data to write: {'city': 'Civitavecchia', 'state': 'Latium', 'country': 'Italy', 'gps_lat': 11.79674, 'gps_lon': 42.09325, 'pollution_timestamp': '2024-06-09T09:00:00.000Z', 'aqius': 44, 'mainus': 'p2', 'aqicn': 27, 'maincn': 'o3', 'weather_timestamp': '2024-06-09T09:00:00.000Z', 'temperature': 29, 'pression': 1009, 'humidity': 66, 'wind_speed': 8.07, 'wind_direction': 145, 'icon': '04d'}
+INFO:ingestion_manager:State retrieved: Liguria
+INFO:ingestion_manager:Retrieved cities ['Chiavari', 'La Spezia']
+INFO:ingestion_manager:City selected: Chiavari
+INFO:ingestion_manager:Data to write: {'city': 'Chiavari', 'state': 'Liguria', 'country': 'Italy', 'gps_lat': 9.32241, 'gps_lon': 44.31771, 'pollution_timestamp': '2024-06-09T09:00:00.000Z', 'aqius': 39, 'mainus': 'p2', 'aqicn': 10, 'maincn': 'p2', 'weather_timestamp': '2024-06-09T09:00:00.000Z', 'temperature': 24, 'pression': 1008, 'humidity': 68, 'wind_speed': 3.57, 'wind_direction': 125, 'icon': '10d'}
+INFO:ingestion_manager:State retrieved: Lombardy
+INFO:ingestion_manager:Retrieved cities ['Assago', 'Bergamo', 'Besate', 'Brescia', 'Cittiglio', 'Corsico', 'Esine', 'Gaggiano', 'Livigno', 'Magenta', 'Milano', 'Nerviano', 'Olgiate Olona', 'Pavia', 'Revere', 'Rho', 'Santa Cristina', 'Settimo Milanese', 'Sumirago', 'Villa Carcina', 'Vimodrone', 'Vittuone']
+INFO:ingestion_manager:City selected: Assago
+INFO:ingestion_manager:Data to write: {'city': 'Assago', 'state': 'Lombardy', 'country': 'Italy', 'gps_lat': 9.12565, 'gps_lon': 45.40887, 'pollution_timestamp': '2024-06-09T09:00:00.000Z', 'aqius': 55, 'mainus': 'p2', 'aqicn': 16, 'maincn': 'p2', 'weather_timestamp': '2024-06-09T09:00:00.000Z', 'temperature': 25, 'pression': 1008, 'humidity': 64, 'wind_speed': 0.89, 'wind_direction': 263, 'icon': '03d'}
+INFO:ingestion_manager:State retrieved: Molise
+INFO:ingestion_manager:State retrieved: Piedmont
+INFO:ingestion_manager:Retrieved cities ['Belvedere Langhe', 'Cerrina', 'Cesana Torinese', 'Piatto', 'Pino Torinese']
+INFO:ingestion_manager:City selected: Belvedere+Langhe
+INFO:ingestion_manager:Data to write: {'city': 'Belvedere Langhe', 'state': 'Piedmont', 'country': 'Italy', 'gps_lat': 7.97387, 'gps_lon': 44.49361, 'pollution_timestamp': '2024-06-09T09:00:00.000Z', 'aqius': 22, 'mainus': 'p2', 'aqicn': 6, 'maincn': 'p2', 'weather_timestamp': '2024-06-09T08:00:00.000Z', 'temperature': 20, 'pression': 1007, 'humidity': 64, 'wind_speed': 3.16, 'wind_direction': 89, 'icon': '04d'}
+INFO:ingestion_manager:State retrieved: Sardinia
+INFO:ingestion_manager:State retrieved: Sicily
+INFO:ingestion_manager:Retrieved cities ['Marinella']
+INFO:ingestion_manager:City selected: Marinella
+INFO:ingestion_manager:Data to write: {'city': 'Marinella', 'state': 'Sicily', 'country': 'Italy', 'gps_lat': 12.84434, 'gps_lon': 37.59475, 'pollution_timestamp': '2024-06-09T09:00:00.000Z', 'aqius': 30, 'mainus': 'p2', 'aqicn': 8, 'maincn': 'p2', 'weather_timestamp': '2024-06-09T09:00:00.000Z', 'temperature': 29, 'pression': 1012, 'humidity': 37, 'wind_speed': 6.03, 'wind_direction': 169, 'icon': '04d'}
+INFO:ingestion_manager:State retrieved: The+Marches
+INFO:ingestion_manager:Retrieved cities ['Ancona', 'Arcevia', 'Chiaravalle', 'Civitanova Alta', 'Fabriano', 'Falconara Marittima', 'Jesi', 'Pesaro', 'Urbino']
+INFO:ingestion_manager:City selected: Ancona
+INFO:ingestion_manager:Data to write: {'city': 'Ancona', 'state': 'The Marches', 'country': 'Italy', 'gps_lat': 13.50337, 'gps_lon': 43.5942, 'pollution_timestamp': '2024-06-09T06:00:00.000Z', 'aqius': 62, 'mainus': 'p2', 'aqicn': 26, 'maincn': 'o3', 'weather_timestamp': '2024-06-09T09:00:00.000Z', 'temperature': 26, 'pression': 1010, 'humidity': 60, 'wind_speed': 1.54, 'wind_direction': 40, 'icon': '04d'}
+INFO:ingestion_manager:State retrieved: Trentino-Alto+Adige
+INFO:ingestion_manager:Retrieved cities ['Avio', 'Bolzano-Bozen', 'Borgo', 'Bressanone', 'Brunico', 'Cortina sulla Strada del Vino', 'Laces', 'Laives', 'Meano', 'Mezzolombardo', 'Ora', 'Renon - Ritten', 'Riva del Garda', 'Rovereto', 'Trento', 'Vezzano']
+INFO:ingestion_manager:City selected: Avio
+INFO:ingestion_manager:Data to write: {'city': 'Avio', 'state': 'Trentino-Alto Adige', 'country': 'Italy', 'gps_lat': 10.93938, 'gps_lon': 45.73396, 'pollution_timestamp': '2024-06-09T09:00:00.000Z', 'aqius': 58, 'mainus': 'p2', 'aqicn': 26, 'maincn': 'p1', 'weather_timestamp': '2024-06-09T09:00:00.000Z', 'temperature': 25, 'pression': 1006, 'humidity': 63, 'wind_speed': 1.74, 'wind_direction': 202, 'icon': '04d'}
+INFO:ingestion_manager:State retrieved: Tuscany
+INFO:ingestion_manager:Retrieved cities ['Florence']
+INFO:ingestion_manager:City selected: Florence
+INFO:ingestion_manager:Data to write: {'city': 'Florence', 'state': 'Tuscany', 'country': 'Italy', 'gps_lat': 11.27222, 'gps_lon': 43.77306, 'pollution_timestamp': '2024-06-09T09:00:00.000Z', 'aqius': 49, 'mainus': 'p2', 'aqicn': 13, 'maincn': 'p2', 'weather_timestamp': '2024-06-09T09:00:00.000Z', 'temperature': 27, 'pression': 1009, 'humidity': 48, 'wind_speed': 4.02, 'wind_direction': 203, 'icon': '01d'}
+INFO:ingestion_manager:State retrieved: Umbria
+INFO:ingestion_manager:State retrieved: Veneto
+INFO:ingestion_manager:Retrieved cities ['Conegliano', 'Fontanafredda', 'Mansue', 'Mestre', 'Mogliano Veneto', 'Monselice', 'Noale', 'Padova', 'Pederobba', 'Ronca', 'Treviso', 'Venice', 'Verona', 'Vicenza']
+INFO:ingestion_manager:City selected: Conegliano
+INFO:ingestion_manager:Data to write: {'city': 'Conegliano', 'state': 'Veneto', 'country': 'Italy', 'gps_lat': 12.308056, 'gps_lon': 45.89055599999999, 'pollution_timestamp': '2024-06-09T05:00:00.000Z', 'aqius': 79, 'mainus': 'p2', 'aqicn': 48, 'maincn': 'p1', 'weather_timestamp': '2024-06-09T09:00:00.000Z', 'temperature': 25, 'pression': 1009, 'humidity': 72, 'wind_speed': 2.24, 'wind_direction': 97, 'icon': '10d'}
+[ingestion_manager] Failed to fetch data. state_not_found
+[ingestion_manager] Failed to fetch data. Too Many Requests. Waiting 5 sec. [CTRL+C to stop]
+[ingestion_manager] Failed to fetch data. Too Many Requests. Waiting 5 sec. [CTRL+C to stop]
+[ingestion_manager] Failed to fetch data. Too Many Requests. Waiting 5 sec. [CTRL+C to stop]
+[ingestion_manager] Failed to fetch data. Too Many Requests. Waiting 5 sec. [CTRL+C to stop]
+[ingestion_manager] Failed to fetch data. Too Many Requests. Waiting 5 sec. [CTRL+C to stop]
+[ingestion_manager] Failed to fetch data. state_not_found
+[ingestion_manager] Failed to fetch data. Too Many Requests. Waiting 5 sec. [CTRL+C to stop]
+[ingestion_manager] Failed to fetch data. Too Many Requests. Waiting 5 sec. [CTRL+C to stop]
+[ingestion_manager] Failed to fetch data. Too Many Requests. Waiting 5 sec. [CTRL+C to stop]
+[ingestion_manager] Failed to fetch data. Too Many Requests. Waiting 5 sec. [CTRL+C to stop]
+[ingestion_manager] Failed to fetch data. Too Many Requests. Waiting 5 sec. [CTRL+C to stop]
+[ingestion_manager] Failed to fetch data. Too Many Requests. Waiting 5 sec. [CTRL+C to stop]
+[ingestion_manager] Failed to fetch data. Too Many Requests. Waiting 5 sec. [CTRL+C to stop]
+[ingestion_manager] Failed to fetch data. Too Many Requests. Waiting 5 sec. [CTRL+C to stop]
+[ingestion_manager] Failed to fetch data. state_not_found
+[ingestion_manager] Failed to fetch data. state_not_found
+[ingestion_manager] Failed to fetch data. Too Many Requests. Waiting 5 sec. [CTRL+C to stop]
+[ingestion_manager] Failed to fetch data. Too Many Requests. Waiting 5 sec. [CTRL+C to stop]
+[ingestion_manager] Failed to fetch data. Too Many Requests. Waiting 5 sec. [CTRL+C to stop]
+[ingestion_manager] Failed to fetch data. Too Many Requests. Waiting 5 sec. [CTRL+C to stop]
+[ingestion_manager] Failed to fetch data. Too Many Requests. Waiting 5 sec. [CTRL+C to stop]
+[ingestion_manager] Failed to fetch data. Too Many Requests. Waiting 5 sec. [CTRL+C to stop]
+[ingestion_manager] Failed to fetch data. Too Many Requests. Waiting 5 sec. [CTRL+C to stop]
+[ingestion_manager] Failed to fetch data. Too Many Requests. Waiting 5 sec. [CTRL+C to stop]
+[ingestion_manager] Failed to fetch data. state_not_found
+[ingestion_manager] Failed to fetch data. Too Many Requests. Waiting 5 sec. [CTRL+C to stop]
+[ingestion_manager] Failed to fetch data. Too Many Requests. Waiting 5 sec. [CTRL+C to stop]
+[ingestion_manager] Failed to fetch data. Too Many Requests. Waiting 5 sec. [CTRL+C to stop]
+[ingestion_manager] Failed to fetch data. Too Many Requests. Waiting 5 sec. [CTRL+C to stop]
