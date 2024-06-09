@@ -124,20 +124,14 @@ services:
 
 
 # Uncomment to get new historical data for training
-  historical_data:
-    build:
-      context: ingestion_manager
-      dockerfile: Dockerfile
-    environment:
-      - DATA_ACTION=TRAIN_MODEL
-    volumes:
-      - /home/andrei/air-quality-monitor/ingestion_manager/data/historical_data.csv:/opt/aqm//ingestion_manager/data/historical_data.csv
-    hostname: historical_data
-    container_name: historical_data
-    depends_on:
-      - logstash
-    networks:
-      aqm:
+  # historical_data:
+  #   build:
+  #     context: ingestion_manager
+  #     dockerfile: Dockerfile
+  #   environment:
+  #     - DATA_ACTION=TRAIN_MODEL
+  #   volumes:
+  #     - /home/andrei/air-quality-monitor/ingestion_manager/data/historical_data.csv:/opt/aqm//ingestion_manager/data/historical_data.csv
 
 # Uncomment to train the model
   # train_model:
