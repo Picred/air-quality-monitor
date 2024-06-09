@@ -30,22 +30,18 @@ def load_dataset(spark: SparkSession, file_path: str) -> DataFrame:
         DataFrame: The loaded dataset.
     """
     schema = StructType([
+        StructField("aqi", IntegerType(), True),
         StructField("city", StringType(), True),
-        StructField("state", StringType(), True),
-        StructField("country", StringType(), True),
-        StructField("gps_lat", FloatType(), True),
-        StructField("gps_lon", FloatType(), True),
-        StructField("pollution_timestamp", StringType(), True),
-        StructField("aqius", IntegerType(), True),
-        StructField("mainus", StringType(), True),
-        StructField("aqicn", IntegerType(), True),
-        StructField("maincn", StringType(), True),
-        StructField("weather_timestamp", StringType(), True),
-        StructField("temperature", FloatType(), True),
-        StructField("pression", FloatType(), True),
-        StructField("humidity", FloatType(), True),
-        StructField("wind_speed", FloatType(), True),
-        StructField("wind_direction", FloatType(), True),
+        StructField("co", FloatType(), True),
+        StructField("lat", FloatType(), True),
+        StructField("lon", FloatType(), True),
+        StructField("nh3", FloatType(), True),
+        StructField("no", FloatType(), True),
+        StructField("no2", FloatType(), True),
+        StructField("pm10", FloatType(), True),
+        StructField("pm2_5", FloatType(), True),
+        StructField("so2", FloatType(), True),
+        StructField("timestamp_utc", StringType(), True)
     ])
     dataset = spark.read.format("csv") \
         .option("header", "true") \
@@ -63,13 +59,13 @@ def train_linear_regression_model(dataset: DataFrame) -> PipelineModel:
     Returns:
         PipelineModel: The trained linear regression model.
     """
-    feature_columns = ["temperature", "pression", "humidity", "wind_speed", "wind_direction"]
+    feature_columns = ["co", "nh3", "no", "no2", "pm10", "pm2_5", "so2"]
     assembler = VectorAssembler(inputCols=feature_columns, outputCol="features")
-    lr = LinearRegression(featuresCol="features", labelCol="aqius")
+    lr = LinearRegression(featuresCol="features", labelCol="aqi")
     pipeline = Pipeline(stages=[assembler, lr])
     train_data, test_data = dataset.randomSplit([0.8, 0.2], seed=12345)
     model = pipeline.fit(train_data)
-    return model
+    return model, test_data
 
 def evaluate_model(model: PipelineModel, test_data: DataFrame) -> None:
     """
@@ -80,7 +76,7 @@ def evaluate_model(model: PipelineModel, test_data: DataFrame) -> None:
         test_data (DataFrame): The test dataset.
     """
     predictions = model.transform(test_data)
-    predictions.select("city", "aqius", "prediction").show()
+    predictions.select("city", "aqi", "prediction").distinct().show()
     training_summary = model.stages[-1].summary
     print("RMSE: %f" % training_summary.rootMeanSquaredError)
     print("r2: %f" % training_summary.r2)
@@ -108,8 +104,7 @@ def stop_spark_session(spark: SparkSession) -> None:
 if __name__ == "__main__":
     spark = create_spark_session()
     dataset = load_dataset(spark, "data.csv")
-    train_data, test_data = dataset.randomSplit([0.8, 0.2], seed=12345)
-    model = train_linear_regression_model(train_data)
+    model, test_data = train_linear_regression_model(dataset)
     evaluate_model(model, test_data)
     save_model(model, "model")
     stop_spark_session(spark)

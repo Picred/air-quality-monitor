@@ -1,5 +1,3 @@
-# version: '3.8'
-
 networks:
   aqm:
     name: aqm
@@ -70,57 +68,56 @@ services:
     networks:
       aqm:
 
-  # spark:
-  #   build:
-  #     context: spark/
-  #     dockerfile: Dockerfile
-  #   hostname: spark
-  #   container_name: spark
-  #   restart: always
-  #   volumes:
-  #     - ./spark/code/app.py:/opt/aqm/app.py
-  #     # - ./ingestion_manager/demo_data.json:/opt/spark/work-dir/demo_data.json
-  #     - ./ingestion_manager/data/historical_data.csv:/opt/spark/work-dir/data.csv
-  #     - ./spark/model:/opt/spark/work-dir/model
-  #   command: > 
-  #     /opt/spark/bin/spark-submit --conf spark.driver.extraJavaOptions="-Divy.cache.dir=/tmp -Divy.home=/tmp" --packages org.apache.spark:spark-sql-kafka-0-10_2.12:3.5.1,org.elasticsearch:elasticsearch-spark-30_2.12:8.13.4  /opt/aqm/app.py
-  #   networks:
-  #     aqm:
-  #   ports:
-  #     - "4040:4040"
-  #   depends_on:
-  #     elasticsearch:
-  #       condition: service_healthy
+  spark:
+    build:
+      context: spark/
+      dockerfile: Dockerfile
+    hostname: spark
+    container_name: spark
+    restart: always
+    volumes:
+      - ./spark/code/app.py:/opt/aqm/app.py
+      - ./ingestion_manager/data/historical_data.csv:/opt/spark/work-dir/data.csv
+      - ./spark/model:/opt/spark/work-dir/model
+    command: > 
+      /opt/spark/bin/spark-submit --conf spark.driver.extraJavaOptions="-Divy.cache.dir=/tmp -Divy.home=/tmp" --packages org.apache.spark:spark-sql-kafka-0-10_2.12:3.5.1,org.elasticsearch:elasticsearch-spark-30_2.12:8.13.4  /opt/aqm/app.py
+    networks:
+      aqm:
+    ports:
+      - "4040:4040"
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
 
-  # elasticsearch:
-  #   image: docker.elastic.co/elasticsearch/elasticsearch:8.13.4
-  #   environment:
-  #     - discovery.type=single-node
-  #     - xpack.security.enabled=false
-  #   mem_limit: 1 GB
-  #   hostname: elasticsearch
-  #   container_name: elasticsearch
-  #   healthcheck:
-  #     test: ["CMD", "curl", "-f", "http://localhost:9200/_cluster/health"]
-  #     interval: 15s
-  #     timeout: 15s
-  #     retries: 5
-  #     start_period: 40s
-  #   networks:
-  #     aqm:
-  #   ports:
-  #     - "9200:9200"
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.13.4
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+    mem_limit: 2 GB
+    hostname: elasticsearch
+    container_name: elasticsearch
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9200/_cluster/health"]
+      interval: 15s
+      timeout: 15s
+      retries: 5
+      start_period: 40s
+    networks:
+      aqm:
+    ports:
+      - "9200:9200"
 
-  # kibana:
-  #   hostname: kibana
-  #   container_name: kibana
-  #   image: docker.elastic.co/kibana/kibana:8.13.4
-  #   ports:
-  #     - "5601:5601"
-  #   volumes:
-  #     - ./kibana/kibana.yml:/usr/share/kibana/config/kibana.yml
-  #   networks:
-  #     aqm:
+  kibana:
+    hostname: kibana
+    container_name: kibana
+    image: docker.elastic.co/kibana/kibana:8.13.4
+    ports:
+      - "5601:5601"
+    volumes:
+      - ./kibana/kibana.yml:/usr/share/kibana/config/kibana.yml
+    networks:
+      aqm:
 
 
 # Uncomment to get new historical data for training

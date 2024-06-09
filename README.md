@@ -129,4 +129,10 @@ Sure, here is the updated section "Getting new training data" in English, with t
 - **Comment out the historical_data** service in the docker-compose.yml file.
 
 ### Update your model
-TODO
+1. **Uncomment the `train_model` service** in the `docker-compose.yml` file.
+
+2. **Build its image** with `docker compose build train_model`.
+
+3. **Start the container** with `docker compose up train_model`.
+
+4. **Check** the model's files in `/spark/model`
