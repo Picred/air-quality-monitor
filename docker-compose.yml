@@ -121,14 +121,29 @@ services:
   #     - ./kibana/kibana.yml:/usr/share/kibana/config/kibana.yml
   #   networks:
   #     aqm:
-  
+
+
+# Uncomment to get new historical data for training
+  historical_data:
+    build:
+      context: ingestion_manager
+      dockerfile: Dockerfile
+    environment:
+      - DATA_ACTION=TRAIN_MODEL
+    volumes:
+      - /home/andrei/air-quality-monitor/ingestion_manager/data/historical_data.csv:/opt/aqm//ingestion_manager/data/historical_data.csv
+    hostname: historical_data
+    container_name: historical_data
+    depends_on:
+      - logstash
+    networks:
+      aqm:
+
 # Uncomment to train the model
   # train_model:
   #   build:
   #     context: spark/
   #     dockerfile: Dockerfile
-  #   environment:
-  #     - DATA_ACTION=TRAIN_MODEL
   #   volumes:
   #     - ./spark/code/train_model.py:/opt/aqm/train_model.py
   #     - ./ingestion_manager/data/historical_data.csv:/opt/spark/work-dir/data.csv

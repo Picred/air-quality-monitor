@@ -37,14 +37,12 @@ async def retrieve_and_send_data(logstash_handler: LogstashHandler, csv_handler:
 
         response = make_request(url)
         response = extract_data(response, city)
-        time.sleep(10)
+        time.sleep(15)
 
         if csv_handler:
             csv_handler.write_to_csv(response)
         else:
             logstash_handler.send_to_logstash(response)
-        
-        break
 
 async def main():
     """
@@ -57,7 +55,7 @@ async def main():
             await retrieve_and_send_data(logstash_handler=logstash_handler, csv_handler=None)
             pass
         case "TRAIN_MODEL":
-            csv_handler = CSVHandler("/ingestion_manager/data/historical_data.csv")
+            csv_handler = CSVHandler("/opt/aqm/ingestion_manager/data/historical_data.csv")
             await retrieve_and_send_data(logstash_handler=None, csv_handler=csv_handler)          
             pass
         case _:
