@@ -6,7 +6,7 @@ from utils.retrieve_data import (
     get_coord,
     check_api_key
 )
-from utils.setup import logger, config, LOGSTASH_HOSTNAME, LOGSTASH_PORT
+from utils.setup import logger, config
 from utils.logstash_handler import LogstashHandler
 from utils.train_data import CSVHandler
 from utils.extract_data import extract_data
@@ -21,27 +21,28 @@ async def retrieve_and_send_data(logstash_handler: LogstashHandler, csv_handler:
     """
     logger.info("Starting data ingestion process...")
     logger.info("This is not a demo. Real data will be retrieved. It may take a while. 🕒")
-    logger.info("Retrieving data of major cities...")
+    logger.info("Retrieving data of major cities of Italy...")
 
     cities_list = config['cities']
 
-
     for city in cities_list:
         coordinates = get_coord(city)
+        
+        if coordinates.get('error'):
+            logger.error(f"Error: {coordinates.get('error')}")
+            continue
+        else:
+            logger.info(f"Retrieving data for {city}...")
         url = f"http://api.openweathermap.org/data/2.5/air_pollution?lat={coordinates.get('lat')}&lon={coordinates.get('lat')}&appid={config['API_KEY']}"
-        
+
         response = make_request(url)
-        
         response = extract_data(response, city)
-        
-        time.sleep(10)
+        time.sleep(5)
 
     # if csv_handler:
     #     csv_handler.write_to_csv(response)
     # else:
         logstash_handler.send_to_logstash(response)
-
-    # time.sleep(10)
 
 
 async def main():
@@ -50,8 +51,8 @@ async def main():
     """
     csv_handler = CSVHandler("/ingestion_manager/data/historical_data.csv")
 
-    logstash_handler = LogstashHandler(LOGSTASH_HOSTNAME, LOGSTASH_PORT)
-    # logstash_handler.test_logstash() # Comment to get data for training
+    logstash_handler = LogstashHandler(config['LOGSTASH_HOSTNAME'], config['LOGSTASH_PORT'])
+    logstash_handler.test_logstash() # Comment to get data for training
 
     data_action = config['DATA_ACTION']
     if data_action == "NODEMO":

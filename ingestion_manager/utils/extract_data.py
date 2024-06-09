@@ -16,7 +16,7 @@ def extract_data(data_raw: dict, city: str) -> dict:
         "lat" : data_raw.get("coord").get("lat"),
         "lon" : data_raw.get("coord").get("lon"),
         "aqi" : data_raw.get("list")[0].get("main").get("aqi"),
-        "timestamp" : datetime.datetime.fromtimestamp(data_raw.get("list")[0].get("dt")).strftime('%Y-%m-%d %H:%M:%S'),
+        "timestamp_utc" : datetime.datetime.fromtimestamp(data_raw.get("list")[0].get("dt")).strftime('%Y-%m-%d %H:%M:%S'),
         "co" : data_raw.get("list")[0].get("components").get("co"),
         "no" : data_raw.get("list")[0].get("components").get("no"),
         "no2" : data_raw.get("list")[0].get("components").get("no2"),

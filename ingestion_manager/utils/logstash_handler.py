@@ -37,11 +37,7 @@ class LogstashHandler:
         Args:
             data (dict): The data to be sent to Logstash.
         """
-        if isinstance(data.get("data"), list):
-            logger.info("Data to be sent: %s", data)
-            return
 
-        data = extract_data(data)
         client = PyLogBeatClient(self.host, self.port)
         client.send([json.dumps(data)])
         logger.info("Sent to Logstash! 🚀")

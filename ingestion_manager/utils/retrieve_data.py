@@ -42,4 +42,4 @@ def get_coord(city):
         if location:
             return {'lat': location.latitude, 'lon': location.longitude}
         else:
-            return {'error': 'Location not found'}
+            return {'error': f'Location \"{city}\" not found'}
