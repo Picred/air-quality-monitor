@@ -23,5 +23,5 @@ config = {
 #                    'Cuneo', 'Gallarate', 'Faenza', 'Marano di Napoli', 'Sanremo', 'Carpi', 'Afragola', 'Bagheria', 'Manfredonia', 'Sassuolo',
 #                    'Caltagirone', 'Bitonto', 'Portici', 'Avellino', 'Acerra', 'Mazara del Vallo', 'Ragusa', 'Chieti', 'Trani', 'Bisceglie','Ercolano'
                 ],
-    "scan_interval" : 2400 # ms
+    "scan_interval" : 15 # seconds
 }

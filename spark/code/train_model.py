@@ -8,10 +8,10 @@ from pyspark.ml.pipeline import PipelineModel
 
 def create_spark_session() -> SparkSession:
     """
-    Create a SparkSession object.
+    Create a `SparkSession` object.
     
     Returns:
-        SparkSession: The SparkSession object.
+        `SparkSession`: The `SparkSession` object.
     """
     spark = SparkSession.builder \
         .appName("AQM - Model Training") \
@@ -23,11 +23,11 @@ def load_dataset(spark: SparkSession, file_path: str) -> DataFrame:
     Load the dataset from a CSV file.
     
     Args:
-        spark (SparkSession): The SparkSession object.
-        file_path (str): The path to the CSV file.
+        spark (`SparkSession`): The `SparkSession` object.
+        file_path (`str`): The path to the CSV file.
     
     Returns:
-        DataFrame: The loaded dataset.
+        `DataFrame`: The loaded dataset.
     """
     schema = StructType([
         StructField("aqi", IntegerType(), True),
@@ -54,10 +54,10 @@ def train_linear_regression_model(dataset: DataFrame) -> PipelineModel:
     Train a linear regression model using the dataset.
     
     Args:
-        dataset (DataFrame): The dataset to train the model on.
+        dataset (`DataFrame`): The dataset to train the model on.
     
     Returns:
-        PipelineModel: The trained linear regression model.
+        `PipelineModel`: The trained linear regression model.
     """
     feature_columns = ["co", "nh3", "no", "no2", "pm10", "pm2_5", "so2"]
     assembler = VectorAssembler(inputCols=feature_columns, outputCol="features")
@@ -72,8 +72,8 @@ def evaluate_model(model: PipelineModel, test_data: DataFrame) -> None:
     Evaluate the trained model.
     
     Args:
-        model (PipelineModel): The trained model.
-        test_data (DataFrame): The test dataset.
+        model (`PipelineModel`): The trained model.
+        test_data (`DataFrame`): The test dataset.
     """
     predictions = model.transform(test_data)
     predictions.select("city", "aqi", "prediction").distinct().show()
@@ -86,17 +86,17 @@ def save_model(model: PipelineModel, file_path: str) -> None:
     Save the trained model to a file.
     
     Args:
-        model (PipelineModel): The trained model.
-        file_path (str): The path to save the model.
+        model (`PipelineModel`): The trained model.
+        file_path (`str`): The path to save the model.
     """
     model.write().overwrite().save(file_path)
 
 def stop_spark_session(spark: SparkSession) -> None:
     """
-    Stop the SparkSession.
+    Stop the `SparkSession`.
     
     Args:
-        spark (SparkSession): The SparkSession object.
+        spark (`SparkSession`): The `SparkSession` object.
     """
     spark.stop()
 

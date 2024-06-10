@@ -6,10 +6,10 @@ import logging
 
 def create_spark_session() -> SparkSession:
     """
-    Create a SparkSession object.
+    Create a `SparkSession` object.
 
     Returns:
-        SparkSession: The created SparkSession object.
+        `SparkSession`: The created `SparkSession` object.
     """
     return SparkSession.builder \
         .appName("AirQualityMonitor") \
@@ -18,15 +18,15 @@ def create_spark_session() -> SparkSession:
 
 def load_data(spark: SparkSession, kafka_server: str, topic: str) -> DataFrame:
     """
-    Load data from Kafka into a DataFrame.
+    Load data from Kafka into a `DataFrame`.
 
     Args:
-        spark (SparkSession): The SparkSession object.
-        kafka_server (str): The Kafka server address.
-        topic (str): The Kafka topic to subscribe to.
+        spark (`SparkSession`): The `SparkSession` object.
+        kafka_server (`str`): The Kafka server address.
+        topic (`str`): The Kafka topic to subscribe to.
 
     Returns:
-        DataFrame: The loaded DataFrame.
+        `DataFrame`: The loaded DataFrame.
     """
     df = spark \
         .readStream \
@@ -43,11 +43,11 @@ def transform_data(df: DataFrame, model: PipelineModel) -> DataFrame:
     Transform the data using a trained model.
 
     Args:
-        df (DataFrame): The input DataFrame.
-        model (PipelineModel): The trained model.
+        df (`DataFrame`): The input `DataFrame`.
+        model (`PipelineModel`): The trained model.
 
     Returns:
-        DataFrame: The transformed DataFrame.
+        `DataFrame`: The transformed `DataFrame`.
     """
     predictions = model.transform(df).withColumnRenamed("prediction", "predicted_aqi")
     
@@ -57,15 +57,15 @@ def transform_data(df: DataFrame, model: PipelineModel) -> DataFrame:
 
 def write_to_elasticsearch(df: DataFrame, elastic_index: str, es_host: str) -> None:
     """
-    Write the DataFrame to Elasticsearch.
+    Write the `DataFrame` to Elasticsearch.
 
     Args:
-        df (DataFrame): The DataFrame to write.
-        elastic_index (str): The Elasticsearch index.
-        es_host (str): The Elasticsearch host.
+        df (`DataFrame`): The `DataFrame` to write.
+        elastic_index (`str`): The Elasticsearch index.
+        es_host (`str`): The Elasticsearch host.
 
     Returns:
-        None
+        `None`
     """
     df.writeStream \
         .format("org.elasticsearch.spark.sql") \

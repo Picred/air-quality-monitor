@@ -12,12 +12,15 @@ from utils.train_data import CSVHandler
 from utils.extract_data import extract_data
 
 
-async def retrieve_and_send_data(logstash_handler: LogstashHandler, csv_handler: CSVHandler):
+async def retrieve_and_send_data(logstash_handler: LogstashHandler, csv_handler: CSVHandler) -> None:
     """
     Retrieves and sends air quality data to Logstash.
 
     Args:
-        logstash_handler (LogstashHandler): The handler for sending data to Logstash.
+        logstash_handler (`LogstashHandler`): The handler for sending data to Logstash.
+    
+    Returns:
+        `None`
     """
     logger.info("Starting data ingestion process...")
     logger.info("This is not a demo. Real data will be retrieved. It may take a while. 🕒")
@@ -37,16 +40,19 @@ async def retrieve_and_send_data(logstash_handler: LogstashHandler, csv_handler:
 
         response = make_request(url)
         response = extract_data(response, city)
-        time.sleep(15)
+        time.sleep(config['scan_interval'])
 
         if csv_handler:
             csv_handler.write_to_csv(response)
         else:
             logstash_handler.send_to_logstash(response)
 
-async def main():
+async def main() -> None:
     """
     The main asynchronous function for executing the script.
+
+    Returns:
+        `None`
     """
     match config['DATA_ACTION']:
         case "NODEMO":

@@ -6,10 +6,10 @@ def extract_data(data_raw: dict, city: str) -> dict:
     Extracts relevant air quality data from the HTML data_raw.
 
     Args:
-        source (str): The HTML source containing air quality information.
+        source (`str`): The HTML source containing air quality information.
 
     Returns:
-        dict: A dictionary containing extracted air quality data.
+        `dict`: A dictionary containing extracted air quality data.
     """
     clean_data = {
         "city" : city,

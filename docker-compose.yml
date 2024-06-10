@@ -29,6 +29,8 @@ services:
     container_name: kafkaServer
     hostname: kafkaServer
     restart: always
+    depends_on:
+      - kafka_zk
     networks:
       aqm:
         ipv4_address: 10.0.100.23
@@ -102,7 +104,7 @@ services:
       interval: 15s
       timeout: 15s
       retries: 5
-      start_period: 40s
+      start_period: 60s
     networks:
       aqm:
     ports:

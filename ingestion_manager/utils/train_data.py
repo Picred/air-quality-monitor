@@ -6,7 +6,7 @@ class CSVHandler:
     """
     A class for handling CSV file operations.
     Args:
-        file_path (str): The file path where CSV data will be saved.
+        file_path (`str`): The file path where CSV data will be saved.
     """
 
     def __init__(self, file_path: str):
@@ -18,7 +18,7 @@ class CSVHandler:
         Write data to a CSV file.
 
         Args:
-            data (dict): The data to be written to the CSV file.
+            data (`dict`): The data to be written to the CSV file.
         """
         logger.info("Data to write: %s", data)
 
