@@ -1,5 +1,3 @@
-# version: '3.8'
-
 networks:
   aqm:
     name: aqm
@@ -31,6 +29,8 @@ services:
     container_name: kafkaServer
     hostname: kafkaServer
     restart: always
+    depends_on:
+      - kafka_zk
     networks:
       aqm:
         ipv4_address: 10.0.100.23
@@ -79,7 +79,6 @@ services:
     restart: always
     volumes:
       - ./spark/code/app.py:/opt/aqm/app.py
-      # - ./ingestion_manager/demo_data.json:/opt/spark/work-dir/demo_data.json
       - ./ingestion_manager/data/historical_data.csv:/opt/spark/work-dir/data.csv
       - ./spark/model:/opt/spark/work-dir/model
     command: > 
@@ -105,7 +104,7 @@ services:
       interval: 15s
       timeout: 15s
       retries: 5
-      start_period: 40s
+      start_period: 60s
     networks:
       aqm:
     ports:
@@ -121,8 +120,9 @@ services:
       - ./kibana/kibana.yml:/usr/share/kibana/config/kibana.yml
     networks:
       aqm:
-  
-# Uncomment to train the model
+
+
+# Uncomment to train the model with historical data
   # train_model:
   #   build:
   #     context: spark/

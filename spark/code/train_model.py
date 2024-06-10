@@ -8,10 +8,10 @@ from pyspark.ml.pipeline import PipelineModel
 
 def create_spark_session() -> SparkSession:
     """
-    Create a SparkSession object.
+    Create a `SparkSession` object.
     
     Returns:
-        SparkSession: The SparkSession object.
+        `SparkSession`: The `SparkSession` object.
     """
     spark = SparkSession.builder \
         .appName("AQM - Model Training") \
@@ -23,29 +23,25 @@ def load_dataset(spark: SparkSession, file_path: str) -> DataFrame:
     Load the dataset from a CSV file.
     
     Args:
-        spark (SparkSession): The SparkSession object.
-        file_path (str): The path to the CSV file.
+        spark (`SparkSession`): The `SparkSession` object.
+        file_path (`str`): The path to the CSV file.
     
     Returns:
-        DataFrame: The loaded dataset.
+        `DataFrame`: The loaded dataset.
     """
     schema = StructType([
+        StructField("aqi", IntegerType(), True),
         StructField("city", StringType(), True),
-        StructField("state", StringType(), True),
-        StructField("country", StringType(), True),
-        StructField("gps_lat", FloatType(), True),
-        StructField("gps_lon", FloatType(), True),
-        StructField("pollution_timestamp", StringType(), True),
-        StructField("aqius", IntegerType(), True),
-        StructField("mainus", StringType(), True),
-        StructField("aqicn", IntegerType(), True),
-        StructField("maincn", StringType(), True),
-        StructField("weather_timestamp", StringType(), True),
-        StructField("temperature", FloatType(), True),
-        StructField("pression", FloatType(), True),
-        StructField("humidity", FloatType(), True),
-        StructField("wind_speed", FloatType(), True),
-        StructField("wind_direction", FloatType(), True),
+        StructField("co", FloatType(), True),
+        StructField("lat", FloatType(), True),
+        StructField("lon", FloatType(), True),
+        StructField("nh3", FloatType(), True),
+        StructField("no", FloatType(), True),
+        StructField("no2", FloatType(), True),
+        StructField("pm10", FloatType(), True),
+        StructField("pm2_5", FloatType(), True),
+        StructField("so2", FloatType(), True),
+        StructField("timestamp_utc", StringType(), True)
     ])
     dataset = spark.read.format("csv") \
         .option("header", "true") \
@@ -58,29 +54,29 @@ def train_linear_regression_model(dataset: DataFrame) -> PipelineModel:
     Train a linear regression model using the dataset.
     
     Args:
-        dataset (DataFrame): The dataset to train the model on.
+        dataset (`DataFrame`): The dataset to train the model on.
     
     Returns:
-        PipelineModel: The trained linear regression model.
+        `PipelineModel`: The trained linear regression model.
     """
-    feature_columns = ["temperature", "pression", "humidity", "wind_speed", "wind_direction"]
+    feature_columns = ["co", "nh3", "no", "no2", "pm10", "pm2_5", "so2"]
     assembler = VectorAssembler(inputCols=feature_columns, outputCol="features")
-    lr = LinearRegression(featuresCol="features", labelCol="aqius")
+    lr = LinearRegression(featuresCol="features", labelCol="aqi")
     pipeline = Pipeline(stages=[assembler, lr])
     train_data, test_data = dataset.randomSplit([0.8, 0.2], seed=12345)
     model = pipeline.fit(train_data)
-    return model
+    return model, test_data
 
 def evaluate_model(model: PipelineModel, test_data: DataFrame) -> None:
     """
     Evaluate the trained model.
     
     Args:
-        model (PipelineModel): The trained model.
-        test_data (DataFrame): The test dataset.
+        model (`PipelineModel`): The trained model.
+        test_data (`DataFrame`): The test dataset.
     """
     predictions = model.transform(test_data)
-    predictions.select("city", "aqius", "prediction").show()
+    predictions.select("city", "aqi", "prediction").distinct().show()
     training_summary = model.stages[-1].summary
     print("RMSE: %f" % training_summary.rootMeanSquaredError)
     print("r2: %f" % training_summary.r2)
@@ -90,17 +86,17 @@ def save_model(model: PipelineModel, file_path: str) -> None:
     Save the trained model to a file.
     
     Args:
-        model (PipelineModel): The trained model.
-        file_path (str): The path to save the model.
+        model (`PipelineModel`): The trained model.
+        file_path (`str`): The path to save the model.
     """
     model.write().overwrite().save(file_path)
 
 def stop_spark_session(spark: SparkSession) -> None:
     """
-    Stop the SparkSession.
+    Stop the `SparkSession`.
     
     Args:
-        spark (SparkSession): The SparkSession object.
+        spark (`SparkSession`): The `SparkSession` object.
     """
     spark.stop()
 
@@ -108,8 +104,7 @@ def stop_spark_session(spark: SparkSession) -> None:
 if __name__ == "__main__":
     spark = create_spark_session()
     dataset = load_dataset(spark, "data.csv")
-    train_data, test_data = dataset.randomSplit([0.8, 0.2], seed=12345)
-    model = train_linear_regression_model(train_data)
+    model, test_data = train_linear_regression_model(dataset)
     evaluate_model(model, test_data)
     save_model(model, "model")
     stop_spark_session(spark)

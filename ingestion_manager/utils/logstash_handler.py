@@ -1,25 +1,27 @@
 import time
 import socket
 import json
-from pylogbeat import PyLogBeatClient #type: ignore
-from .extract_data import extract_data
+from pylogbeat import PyLogBeatClient
 from .setup import logger
 
 class LogstashHandler:
     """
     A class for handling communication with Logstash.
     Args:
-        host (str): The hostname or IP address of the Logstash server.
-        port (int): The port number on which Logstash is running.
+        host (`str`): The hostname or IP address of the Logstash server.
+        port (`int`): The port number on which Logstash is running.
     """
 
     def __init__(self, host: str, port: int):
         self.host = host
         self.port = port
 
-    def test_logstash(self):
+    def test_logstash(self) -> None:
         """
         Checks if Logstash is ready for receiving data.
+
+        Returns:
+            `None`
         """
         while True:
             try:
@@ -30,18 +32,14 @@ class LogstashHandler:
                 logger.warning("Logstash not ready, waiting... [CTRL+C to stop]")
                 time.sleep(5)
 
-    def send_to_logstash(self, data: dict):
+    def send_to_logstash(self, data: dict) -> None:
         """
         Sends data to Logstash for ingestion.
 
         Args:
-            data (dict): The data to be sent to Logstash.
+            data (`dict`): The data to be sent to Logstash.
         """
-        if isinstance(data.get("data"), list):
-            logger.info("Data to be sent: %s", data)
-            return
 
-        data = extract_data(data)
         client = PyLogBeatClient(self.host, self.port)
         client.send([json.dumps(data)])
         logger.info("Sent to Logstash! 🚀")

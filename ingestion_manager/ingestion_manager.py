@@ -1,106 +1,72 @@
 import asyncio
-import json
 import sys
 import time
 from utils.retrieve_data import (
-    get_states_by_country,
-    get_cities_by_state_country,
     make_request,
-    get_data,
+    get_coord,
     check_api_key
 )
-from utils.setup import logger, config, LOGSTASH_HOSTNAME, LOGSTASH_PORT
+from utils.setup import logger, config
 from utils.logstash_handler import LogstashHandler
-from utils.train_data import CSVHandler
+from utils.csv_handler import CSVHandler
+from utils.extract_data import extract_data
 
 
-async def retrieve_and_send_data(logstash_handler: LogstashHandler, csv_handler: CSVHandler):
+async def retrieve_and_send_data(logstash_handler: LogstashHandler, csv_handler: CSVHandler) -> None:
     """
     Retrieves and sends air quality data to Logstash.
 
     Args:
-        logstash_handler (LogstashHandler): The handler for sending data to Logstash.
+        logstash_handler (`LogstashHandler`): The handler for sending data to Logstash.
+    
+    Returns:
+        `None`
     """
     logger.info("Starting data ingestion process...")
     logger.info("This is not a demo. Real data will be retrieved. It may take a while. 🕒")
-    logger.info("Selected country: %s", config['COUNTRY_NAME'])
-    logger.info("Retrieving data of major cities...")
+    logger.info("Retrieving data of major cities of Italy...")
 
-    states = get_states_by_country(config['COUNTRY_NAME'])
-    states_list = [elem['state'] for elem in states]
+    cities = config['cities']
 
-    time.sleep(1)
-
-    for state in states_list:
-        state = state.replace(" ", "+")
-        logger.info("State retrieved: %s", state)
-        cities = get_cities_by_state_country(state, config['COUNTRY_NAME'])
-
-        if not cities:
+    for city in cities:
+        coordinates = get_coord(city)
+        
+        if coordinates.get('error'):
+            logger.error(f"Error: {coordinates.get('error')}")
             continue
+        else:
+            logger.info(f"Retrieving data for {city}...")
+        url = f"http://api.openweathermap.org/data/2.5/air_pollution?lat={coordinates.get('lat')}&lon={coordinates.get('lon')}&appid={config['API_KEY']}"
 
-        cities_list = [elem['city'] for elem in cities if 'city' in elem]
-        if not cities_list:
-            logger.warning("No cities found for this state. Maybe too many requests.\
-                            Waiting 10 sec. [CTRL+C to stop]")
-            time.sleep(10)
-            continue
-
-        logger.info("Retrieved cities %s", cities_list)
-        time.sleep(10)
-
-        city = cities_list[0].replace(" ", "+")
-        logger.info("City selected: %s", city)
-        url = f"http://api.airvisual.com/v2/city?city={city}&state={state}&country=\
-            {config['COUNTRY_NAME']}&key={config['API_KEY']}"
         response = make_request(url)
+        response = extract_data(response, city)
+        time.sleep(config['scan_interval'])
 
         if csv_handler:
             csv_handler.write_to_csv(response)
         else:
             logstash_handler.send_to_logstash(response)
 
-        time.sleep(10)
-
-
-def get_demo_data() -> dict:
-    """
-    Retrieves all demo data from a given json file.
-    """
-    with open(file='demo_data.json', mode='r', encoding='utf-8') as f:
-        return json.load(f)
-
-
-async def demo(logstash_handler: LogstashHandler):
-    """
-    Demo function to test the data ingestion process.
-
-    Args:
-        logstash_handler (LogstashHandler): The handler for sending data to Logstash.
-    """
-    demo_data = get_demo_data()
-    for element in demo_data:
-        logstash_handler.send_to_logstash(element.get("data"))
-
-
-async def main():
+async def main() -> None:
     """
     The main asynchronous function for executing the script.
+
+    Returns:
+        `None`
     """
-    csv_handler = CSVHandler("/ingestion_manager/data/historical_data.csv")
-
-    logstash_handler = LogstashHandler(LOGSTASH_HOSTNAME, LOGSTASH_PORT)
-    # logstash_handler.test_logstash() # Comment to get data for training
-
-    data_action = config['DATA_ACTION']
-    if data_action == "DEMO":
-        await demo(logstash_handler)
-    elif data_action == "NODEMO":
-        # await retrieve_and_send_data(logstash_handler=logstash_handler, csv_handler=None) # Comment to get data for training
-        await retrieve_and_send_data(logstash_handler=None, csv_handler=csv_handler) # Uncomment to train data
-    else:
-        logstash_handler.send_to_logstash(get_data())
-
+    match config['DATA_ACTION']:
+        case "NODEMO":
+            logstash_handler = LogstashHandler(config['LOGSTASH_HOSTNAME'], config['LOGSTASH_PORT'])
+            logstash_handler.test_logstash()
+            await retrieve_and_send_data(logstash_handler=logstash_handler, csv_handler=None)
+            pass
+        case "TRAIN_MODEL":
+            csv_handler = CSVHandler("/opt/aqm/ingestion_manager/data/historical_data.csv")
+            await retrieve_and_send_data(logstash_handler=None, csv_handler=csv_handler)          
+            pass
+        case _:
+            logger.error("Invalid data action. Exiting...")
+            sys.exit(1)
 
 if __name__ == '__main__':
     if not check_api_key():

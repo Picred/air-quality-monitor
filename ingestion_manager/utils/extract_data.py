@@ -1,31 +1,28 @@
 """Cleans raw data from GET request"""
-def extract_data(data_raw: dict) -> dict:
+import datetime
+
+def extract_data(data_raw: dict, city: str) -> dict:
     """
     Extracts relevant air quality data from the HTML data_raw.
 
     Args:
-        source (str): The HTML source containing air quality information.
+        source (`str`): The HTML source containing air quality information.
 
     Returns:
-        dict: A dictionary containing extracted air quality data.
+        `dict`: A dictionary containing extracted air quality data.
     """
     clean_data = {
-        "city" : data_raw.get("city"),
-        "state" : data_raw.get("state"),
-        "country" : data_raw.get("country"),
-        "gps_lat" : data_raw.get("location").get("coordinates")[0],
-        "gps_lon" : data_raw.get("location").get("coordinates")[1],
-        "pollution_timestamp" : data_raw.get("current").get("pollution").get("ts"),
-        "aqius" : data_raw.get("current").get("pollution").get("aqius"),
-        "mainus" : data_raw.get("current").get("pollution").get("mainus"),
-        "aqicn" : data_raw.get("current").get("pollution").get("aqicn"),
-        "maincn" : data_raw.get("current").get("pollution").get("maincn"),
-        "weather_timestamp" : data_raw.get("current").get("weather").get("ts"),
-        "temperature" : data_raw.get("current").get("weather").get("tp"),
-        "pression" : data_raw.get("current").get("weather").get("pr"),
-        "humidity" : data_raw.get("current").get("weather").get("hu"),
-        "wind_speed" : data_raw.get("current").get("weather").get("ws"),
-        "wind_direction" : data_raw.get("current").get("weather").get("wd"),
-        "icon" : data_raw.get("current").get("weather").get("ic")
+        "city" : city,
+        "lat" : data_raw.get("coord").get("lat"),
+        "lon" : data_raw.get("coord").get("lon"),
+        "aqi" : data_raw.get("list")[0].get("main").get("aqi"),
+        "timestamp_utc" : datetime.datetime.fromtimestamp(data_raw.get("list")[0].get("dt")).strftime('%Y-%m-%d %H:%M:%S'),
+        "co" : data_raw.get("list")[0].get("components").get("co"),
+        "no" : data_raw.get("list")[0].get("components").get("no"),
+        "no2" : data_raw.get("list")[0].get("components").get("no2"),
+        "so2" : data_raw.get("list")[0].get("components").get("so2"),
+        "pm2_5" : data_raw.get("list")[0].get("components").get("pm2_5"),
+        "nh3" : data_raw.get("list")[0].get("components").get("nh3"),
+        "pm10" : data_raw.get("list")[0].get("components").get("pm10")
     }
     return clean_data
