@@ -122,17 +122,7 @@ services:
       aqm:
 
 
-# Uncomment to get new historical data for training
-  # historical_data:
-  #   build:
-  #     context: ingestion_manager
-  #     dockerfile: Dockerfile
-  #   environment:
-  #     - DATA_ACTION=TRAIN_MODEL
-  #   volumes:
-  #     - /home/andrei/air-quality-monitor/ingestion_manager/data/historical_data.csv:/opt/aqm//ingestion_manager/data/historical_data.csv
-
-# Uncomment to train the model
+# Uncomment to train the model with historical data
   # train_model:
   #   build:
   #     context: spark/

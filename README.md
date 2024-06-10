@@ -60,28 +60,18 @@ docker run -it --rm --hostname="ingestion_manager" --network aqm -e DATA_ACTION=
 ```
 
 ## Getting new training data 
+Just like the real-time data, you can also collect historical data to train your model.
 
-### Data Collection every hour
-1. **Start the Crontab (Linux)**: Add the following line to your crontab: `0 * * * * /full/path/air-quality-monitor/train.sh >> /full/path/air-quality-monitor/cron.log 2>&1`. This will schedule data collection every hour.
-    - You can open the *crontab* editor with `crontab -e`
-    - If you are not using Linux, you can start the script manually with `bash /full/path/air-quality-monitor/train.sh >> /full/path/air-quality-monitor/cron.log 2>&1`
-    - **Note**: Ensure the Docker process has the correct permissions on the `./ingestion_manager/data` folder so it can insert new elements.
-    - **Note**: Ensure to replace `/full/path/air-quality-monitor` with the correct path to the project folder.
+- Check the following link to see the available data: [Historical Data](https://openweathermap.org/api/air-pollution)
 
-2. **Uncomment the `historical_data` service** in the `docker-compose.yml` file.
+- Generally use the API call: `http://api.openweathermap.org/data/2.5/air_pollution/history?lat={lat}&lon={lon}&start={start}&end={end}&appid={API key}`
 
-3. **Build its image** with `docker compose build historical_data`.
+- Save the data in the `data` folder with a name according to the `load()` function on the `save_old_data.py` file.
 
-4. **Wait for the scheduled time** for data collection to begin.
-
-5. Check the log on `cron.log`
-    - **Note**: Ensure the Docker process has the correct permissions on the `./ingestion_manager/data` folder so it can insert new elements.
-
-6. **Model Evaluation**: After training, evaluate the model's performance to ensure it has improved with the addition of the new data.
-
-### Stopping new data collection
-- **Remove the Crontab Entry**: Remove the written line from your crontab 
-- **Comment out the historical_data** service in the `docker-compose.yml` file.
+```python
+with open('../data/milan_3munths.json') as f:
+    data_raw = json.load(f)
+```
 
 ### Update your model
 1. **Uncomment the `train_model` service** in the `docker-compose.yml` file.

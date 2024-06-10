@@ -8,7 +8,7 @@ from utils.retrieve_data import (
 )
 from utils.setup import logger, config
 from utils.logstash_handler import LogstashHandler
-from utils.train_data import CSVHandler
+from utils.csv_handler import CSVHandler
 from utils.extract_data import extract_data
 
 
