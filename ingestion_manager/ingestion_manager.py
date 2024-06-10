@@ -23,9 +23,9 @@ async def retrieve_and_send_data(logstash_handler: LogstashHandler, csv_handler:
     logger.info("This is not a demo. Real data will be retrieved. It may take a while. 🕒")
     logger.info("Retrieving data of major cities of Italy...")
 
-    cities_list = config['cities']
+    cities = config['cities']
 
-    for city in cities_list:
+    for city in cities:
         coordinates = get_coord(city)
         
         if coordinates.get('error'):
@@ -33,7 +33,7 @@ async def retrieve_and_send_data(logstash_handler: LogstashHandler, csv_handler:
             continue
         else:
             logger.info(f"Retrieving data for {city}...")
-        url = f"http://api.openweathermap.org/data/2.5/air_pollution?lat={coordinates.get('lat')}&lon={coordinates.get('lat')}&appid={config['API_KEY']}"
+        url = f"http://api.openweathermap.org/data/2.5/air_pollution?lat={coordinates.get('lat')}&lon={coordinates.get('lon')}&appid={config['API_KEY']}"
 
         response = make_request(url)
         response = extract_data(response, city)

@@ -1,8 +1,7 @@
 import time
 import socket
 import json
-from pylogbeat import PyLogBeatClient #type: ignore
-from .extract_data import extract_data
+from pylogbeat import PyLogBeatClient
 from .setup import logger
 
 class LogstashHandler:
