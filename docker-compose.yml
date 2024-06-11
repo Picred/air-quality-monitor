@@ -104,7 +104,7 @@ services:
       interval: 15s
       timeout: 15s
       retries: 5
-      start_period: 60s
+      start_period: 90s
     networks:
       aqm:
     ports:
