@@ -12,13 +12,13 @@ from utils.csv_handler import CSVHandler
 from utils.extract_data import extract_data
 
 
-async def retrieve_and_send_data(logstash_handler: LogstashHandler, csv_handler: CSVHandler) -> None:
+async def retrieve_and_send_data(logstash_handler: LogstashHandler) -> None:
     """
     Retrieves and sends air quality data to Logstash.
 
     Args:
         logstash_handler (`LogstashHandler`): The handler for sending data to Logstash.
-    
+
     Returns:
         `None`
     """
@@ -29,8 +29,8 @@ async def retrieve_and_send_data(logstash_handler: LogstashHandler, csv_handler:
     cities = config['cities']
 
     for city in cities:
-        coordinates = get_coord(city)
-        
+        coordinates = await get_coord(city)
+
         if coordinates.get('error'):
             logger.error(f"Error: {coordinates.get('error')}")
             continue
@@ -38,14 +38,12 @@ async def retrieve_and_send_data(logstash_handler: LogstashHandler, csv_handler:
             logger.info(f"Retrieving data for {city}...")
         url = f"http://api.openweathermap.org/data/2.5/air_pollution?lat={coordinates.get('lat')}&lon={coordinates.get('lon')}&appid={config['API_KEY']}"
 
-        response = make_request(url)
+        response = await make_request(url)
         response = extract_data(response, city)
         time.sleep(config['scan_interval'])
 
-        if csv_handler:
-            csv_handler.write_to_csv(response)
-        else:
-            logstash_handler.send_to_logstash(response)
+        logstash_handler.send_to_logstash(response)
+
 
 async def main() -> None:
     """
@@ -54,19 +52,10 @@ async def main() -> None:
     Returns:
         `None`
     """
-    match config['DATA_ACTION']:
-        case "NODEMO":
-            logstash_handler = LogstashHandler(config['LOGSTASH_HOSTNAME'], config['LOGSTASH_PORT'])
-            logstash_handler.test_logstash()
-            await retrieve_and_send_data(logstash_handler=logstash_handler, csv_handler=None)
-            pass
-        case "TRAIN_MODEL":
-            csv_handler = CSVHandler("/opt/aqm/ingestion_manager/data/historical_data.csv")
-            await retrieve_and_send_data(logstash_handler=None, csv_handler=csv_handler)          
-            pass
-        case _:
-            logger.error("Invalid data action. Exiting...")
-            sys.exit(1)
+    logstash_handler = LogstashHandler(config['LOGSTASH_HOSTNAME'], config['LOGSTASH_PORT'])
+    logstash_handler.test_logstash()
+    await retrieve_and_send_data(logstash_handler=logstash_handler)
+
 
 if __name__ == '__main__':
     if not check_api_key():
