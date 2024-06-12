@@ -32,7 +32,7 @@ def extract_historic_data(data_raw: dict, city: str) -> dict:
 if __name__ == "__main__":
     csv_handler = CSVHandler("../data/historical_data.csv")
 
-    with open('../data/milan_3munths.json') as f:
+    with open('../data/milan_3months.json') as f:
         data_raw = json.load(f)
 
     for item in data_raw.get("list"):

@@ -66,12 +66,14 @@ Just like the real-time data, you can also collect historical data to train your
 
 - Generally use the API call: `http://api.openweathermap.org/data/2.5/air_pollution/history?lat={lat}&lon={lon}&start={start}&end={end}&appid={API key}`
 
-- Save the data in the `data` folder with a name according to the `load()` function on the `save_old_data.py` file.
+- Save the historical data in the `data` folder with a name according to the `load()` function on the `save_old_data.py` file. Actually it is *milan_3months.json*
 
 ```python
 with open('../data/milan_3munths.json') as f:
     data_raw = json.load(f)
 ```
+
+- Run `python3 save_old_data.py`W
 
 ### Update your model
 1. **Uncomment the `train_model` service** in the `docker-compose.yml` file.

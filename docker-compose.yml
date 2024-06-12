@@ -65,6 +65,8 @@ services:
       dockerfile: Dockerfile
     hostname: ingestion_manager
     container_name: ingestion_manager
+    volumes:
+      - ./ingestion_manager:/ingestion_manager
     depends_on:
       - logstash
     networks:
