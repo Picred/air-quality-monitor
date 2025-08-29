@@ -1,5 +1,7 @@
 # Real-Time Air Quality Monitor
 
+![AQM Dashboard](/media/aqm_dashboard.png)
+
 ## Summary 📑
 
 - [Prerequisites](#prerequisites-)
@@ -89,6 +91,3 @@ with open('../data/milan_3munths.json') as f:
 3. **Start the container** with `docker compose up train_model`.
 4. **Check** the model's files in `/spark/model`
 
-## Screenshot
-Here is the result of this project.
-![AQM Dashboard](/media/aqm_dashboard.png)
