@@ -37,7 +37,10 @@ wget https://downloads.apache.org/kafka/3.7.2/kafka_2.13-3.7.2.tgz
 cd ..
 ```
 > **Edit the version if necessary [Versions](https://downloads.apache.org/kafka/)**
-> _wget https://downloads.apache.org/kafka/<new-version>/kafka_<new-version>_
+
+```bash
+template@version-edit:$~ wget https://downloads.apache.org/kafka/[NEW_VERSION]/kafka_[NEW_VERSION]
+```
 
 ### Docker Compose
 Run the following command to start the Docker Compose:
