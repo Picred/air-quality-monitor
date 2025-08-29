@@ -1,17 +1,19 @@
 # Real-Time Air Quality Monitor
 
-## Summary
+## Summary 📑
+
 - [Prerequisites](#prerequisites-)
-- [Setup](#setup-)
-    - [Apache Zookeeper, Apache Kafka, Logstash](#apache-zookeeper-apache-kafka-logstash)
-    - [Docker Compose](#docker-compose)
-    - [Useful links](#useful-links)
-    - [Set Real-Time data with crontab](#set-real-time-data-with-crontab)
-    - [Examples](#examples)
+- [Setup](#setup-️)
+  - [Apache Zookeeper, Apache Kafka, Logstash](#apache-zookeeper-apache-kafka-logstash)
+  - [Docker Compose](#docker-compose)
+  - [Importing a Dashboard in Kibana (UI)](#importing-a-dashboard-in-kibana-ui)
+  - [Useful links](#useful-links)
+- [Set Real-Time data with crontab](#set-real-time-data-with-crontab)
+  - [Start manual data ingestion](#start-manual-data-ingestion)
 - [Getting new training data](#getting-new-training-data)
-    - [Data Collection](#data-collection)
-    - [Stopping new data collection](#stopping-new-data-collection)
-    - [Update your model](#update-your-model)
+  - [Update your model](#update-your-model)
+
+
 
 ## Prerequisites 📜
 To use the Air-Quality Monitor app, you should have familiarity with the following technologies:
@@ -28,16 +30,24 @@ To set up the Air Quality Monitor, follow these steps:
 Download Kafka by running the following command:
 ```bash
 cd kafka/setup
-wget https://downloads.apache.org/kafka/3.7.0/kafka_2.13-3.7.0.tgz
+wget https://downloads.apache.org/kafka/3.7.2/kafka_2.13-3.7.2.tgz
 cd ..
 ```
-> *Edit the version if necessary [Versions](https://downloads.apache.org/kafka/)*
+> **Edit the version if necessary [Versions](https://downloads.apache.org/kafka/)**
+> _wget https://downloads.apache.org/kafka/<new-version>/kafka_<new-version>_
 
 ### Docker Compose
 Run the following command to start the Docker Compose:
 ```bash
 docker compose up --build
 ```
+
+### Importing a Dashboard in Kibana (UI)
+To import the dashboard on Kibana you must:
+1. Open the left-side panel and click on **Stack Management**.
+2. Navigate to **Saved Objects**.
+3. Click **Import** (top-right corner) and select the file */kibana/kibana_dashboard.ndjson*
+
 
 ### Useful links:
 - [Kafka UI](http://localhost:8080)
@@ -61,11 +71,8 @@ docker run -it --rm --hostname="ingestion_manager" --network aqm -e DATA_ACTION=
 
 ## Getting new training data 
 Just like the real-time data, you can also collect historical data to train your model.
-
 - Check the following link to see the available data: [Historical Data](https://openweathermap.org/api/air-pollution)
-
 - Generally use the API call: `http://api.openweathermap.org/data/2.5/air_pollution/history?lat={lat}&lon={lon}&start={start}&end={end}&appid={API key}`
-
 - Save the historical data in the `data` folder with a name according to the `load()` function on the `save_old_data.py` file. Actually it is *milan_3months.json*
 
 ```python
@@ -77,9 +84,6 @@ with open('../data/milan_3munths.json') as f:
 
 ### Update your model
 1. **Uncomment the `train_model` service** in the `docker-compose.yml` file.
-
 2. **Build its image** with `docker compose build train_model`.
-
 3. **Start the container** with `docker compose up train_model`.
-
 4. **Check** the model's files in `/spark/model`
